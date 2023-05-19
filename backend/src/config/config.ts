@@ -1,7 +1,10 @@
 import 'dotenv/config'
 
+
 export const config = {
-    MONGO_URI: process.env.MONGO_URI!,
+    //MONGO_URI: process.env.MONGO_STRING!,
+
+    MONGO_URI:'mongodb+srv://nmwanik111:tiovobet1@cluster0.rrh7694.mongodb.net/',
 
     PORT: process.env.PORT,
 

@@ -4,7 +4,7 @@ import { Observable, Subject, startWith } from 'rxjs';
 
 export class MainserviceService {
   constructor(private fs: any) {}
-    UEFAClubsJSON = this.fs.readFileSync('./uefa_clubs.json')
+    UEFAClubsJSON = this.fs.readFileSync('/home/iandev/v-fb-casino-core/backend/src/services/footballMatchSimulator/uefa_clubs.json') //can update to fetch from db, or cache, as object
     UEFAClubsObject = JSON.parse(this.UEFAClubsJSON)
     ClubsOnservable = Observable.create((clubs:any)=>{
       clubs.next(this.UEFAClubsObject)

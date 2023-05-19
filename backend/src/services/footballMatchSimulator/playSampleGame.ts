@@ -13,12 +13,13 @@ const match = new ScoreboardComponent(sampleGame)
 
 const statsComponent = new StatsComponent(sampleGame)
 
-const startMatchSample = ()=>{
-  setUpMatch.ChangeTournament('UEFA Champions League')
+export const startMatch = (matchID: string, homeTeam: string, awayTeam: string)=>{
+  
+setUpMatch.ChangeTournament('UEFA Champions League')
 
-setUpMatch.ChangeHomeTeamName('Barcelona')
+setUpMatch.ChangeHomeTeamName(homeTeam)
 
-setUpMatch.ChangeAwayTeamName('Juventus')
+setUpMatch.ChangeAwayTeamName(awayTeam)
 
 setUpMatch.ChangeRelativeStrength(1)
 
@@ -36,10 +37,8 @@ setUpMatch.proceedToMatch()
 
 match.startMatch()
 
-console.log('match started')
+console.log(`match ${matchID} started `)
 }
-
-startMatchSample()
 
 export const getMatch = (req: Request,res: Response)=>{
 

@@ -3,6 +3,7 @@ import { config } from "./config"
 
 export const connectDB = async () =>{
     console.log(`- - -`.repeat(10))
+    console.log('uri', config.PORT)
     try{
         const options = {
             useUnifiedTopology: true,

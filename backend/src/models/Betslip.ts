@@ -1,10 +1,16 @@
 import { Schema } from "mongoose";
-import { IBetslip } from "../types/IBetslip";
+import { IBetslip, gamePick } from "../types/IBetslip";
 
 const Betslip = new Schema<IBetslip>({
     userID: {
         type: String,
         required: true
     },
-    picks: []
+    picks: {
+        type: [{
+            gameID: String,
+            gamePredictions: String
+        }],
+        required: true
+    }
 })
