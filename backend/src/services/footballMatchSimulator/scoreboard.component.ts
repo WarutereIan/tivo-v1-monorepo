@@ -128,7 +128,7 @@ export class ScoreboardComponent {
   awayTeamShotsOnGoal: number = 0;
   homeTeamPossession: number = 50;
   awayTeamPossession: number = 100 - this.homeTeamPossession;
-  allPotentialFouls: number = Math.round(20 + Math.random() * 7);
+  allPotentialFouls: number = Math.round(7 + Math.random() * 7);
   homeTeamFouls: number = 0;
   homeTeamPotentialFouls: number = 0;
   awayTeamFouls: number = 0;
@@ -601,7 +601,7 @@ export class ScoreboardComponent {
       ) {
         this.matchSeconds = this.matchSeconds + 1;
         // when new minute starts
-        if (this.matchSeconds > 59) {
+        if (this.matchSeconds > 500) {  //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
           this.matchSeconds = 0;
 

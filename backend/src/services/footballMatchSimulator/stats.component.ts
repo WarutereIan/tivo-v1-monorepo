@@ -1,7 +1,7 @@
 //import { Component, OnInit } from '@angular/core';
-import { Observable, combineLatest, combineLatestAll, concat, forkJoin, startWith, zip } from 'rxjs';
+import { Observable, combineLatest, combineLatestAll, concat, forkJoin, mergeAll, startWith, zip } from 'rxjs';
 import { MainserviceService } from './mainservice.service';
-import { merge } from 'jquery';
+import { data, merge } from 'jquery';
 
 
 export class StatsComponent {
@@ -21,6 +21,7 @@ export class StatsComponent {
   awayTeamTactics!: number;
   stats!:any;
   statsObject!:any
+  matchID!: string
 
   // what came from scoreboard component
   matchMinutes: number = 0;
@@ -47,9 +48,11 @@ export class StatsComponent {
 
   constructor(private _mainService: MainserviceService) {
     //create stats observable to stream match stats to subscribers
+    
     this.stats = combineLatest([
-      this._mainService.homeTeamPossession,
-      this._mainService.awayTeamPossession,
+      //this._mainService.matchID,
+      this._mainService.homeTeamPossession.pipe(startWith(0)),
+      this._mainService.awayTeamPossession.pipe(startWith(0)),
       this._mainService.homeTeamFouls.pipe(startWith(0)),
       this._mainService.awayTeamFouls.pipe(startWith(0)),
       this._mainService.homeTeamYellowCards.pipe(startWith(0)),
@@ -64,9 +67,12 @@ export class StatsComponent {
       this._mainService.awayTeamGoals.pipe(startWith(0))
     ])
 
+    this._mainService.matchID.subscribe((data)=>{
+      this.matchID = data
+    })
+
     this._mainService.matchHasStarted.subscribe((data) => {
       this.matchHasStarted = data;
-      console.log('match has started', data)
     });
     this._mainService.homeTeamName.subscribe((data) => {
       this.homeTeamName = data;

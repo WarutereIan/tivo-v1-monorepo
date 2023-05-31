@@ -14,6 +14,11 @@ export class MainserviceService {
     return this.fs.readFileSync('./uefa_nations.json');
   }*/
 
+  matchID = new Subject<string>();
+  updateMatchID(data: any){
+    this.matchID.next(data);
+  }
+
   matchHasStarted = new Subject<boolean>();
   //matchHasStarted$ = this.matchHasStarted.asObservable();
   updateMatchHasStarted(data: any) {

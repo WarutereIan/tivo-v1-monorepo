@@ -1,9 +1,16 @@
-import { connectDB } from "./config/db";
-import { PlayRound } from "./services/gameManager";
+import { data } from "jquery";
+import { RedisClient, connectDB } from "./config/db";
+import { PlayRound, seasonFixtures } from "./services/gameManager";
+import { Request, response, request } from "express";
 
-connectDB().then(()=>{
-    console.log('connected')
-})
+connectDB().then(() => {
+  seasonFixtures.storeFixturesInCache().then((res) => {});
 
-const matches = new PlayRound(0)
+  seasonFixtures.getFixturesFromCache(request, response).then((res) => {});
+});
 
+function startRound<PlayRound>(roundNumber: number) {
+  return new PlayRound(roundNumber);
+}
+
+//export const matches = startRound(1)
