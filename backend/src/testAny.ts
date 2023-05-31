@@ -1,4 +1,4 @@
-import { data } from "jquery";
+
 import { RedisClient, connectDB } from "./config/db";
 import { PlayRound, seasonFixtures } from "./services/gameManager";
 import { Request, response, request } from "express";

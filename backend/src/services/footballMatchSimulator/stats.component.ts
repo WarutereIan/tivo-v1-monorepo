@@ -1,12 +1,19 @@
 //import { Component, OnInit } from '@angular/core';
-import { Observable, combineLatest, combineLatestAll, concat, forkJoin, mergeAll, startWith, zip } from 'rxjs';
-import { MainserviceService } from './mainservice.service';
-import { data, merge } from 'jquery';
-
+import {
+  Observable,
+  combineLatest,
+  combineLatestAll,
+  concat,
+  forkJoin,
+  mergeAll,
+  startWith,
+  zip,
+} from "rxjs";
+import { MainserviceService } from "./mainservice.service";
 
 export class StatsComponent {
   // what came to ScoreBoard from Match Settings
-   matchHasStarted!: boolean;
+  matchHasStarted!: boolean;
   homeTeamName!: string;
   awayTeamName!: string;
   isSecondLeg!: boolean;
@@ -19,9 +26,9 @@ export class StatsComponent {
   awayTeamMorale!: number;
   homeTeamTactics!: number;
   awayTeamTactics!: number;
-  stats!:any;
-  statsObject!:any
-  matchID!: string
+  stats!: any;
+  statsObject!: any;
+  matchID!: string;
 
   // what came from scoreboard component
   matchMinutes: number = 0;
@@ -48,7 +55,7 @@ export class StatsComponent {
 
   constructor(private _mainService: MainserviceService) {
     //create stats observable to stream match stats to subscribers
-    
+
     this.stats = combineLatest([
       //this._mainService.matchID,
       this._mainService.homeTeamPossession.pipe(startWith(0)),
@@ -64,12 +71,12 @@ export class StatsComponent {
       this._mainService.homeTeamShotsOnGoal.pipe(startWith(0)),
       this._mainService.awayTeamShotsOnGoal.pipe(startWith(0)),
       this._mainService.homeTeamGoals.pipe(startWith(0)),
-      this._mainService.awayTeamGoals.pipe(startWith(0))
-    ])
+      this._mainService.awayTeamGoals.pipe(startWith(0)),
+    ]);
 
-    this._mainService.matchID.subscribe((data)=>{
-      this.matchID = data
-    })
+    this._mainService.matchID.subscribe((data) => {
+      this.matchID = data;
+    });
 
     this._mainService.matchHasStarted.subscribe((data) => {
       this.matchHasStarted = data;
@@ -193,8 +200,5 @@ export class StatsComponent {
     this._mainService.awayTeamGoals.subscribe((data) => {
       this.awayTeamGoals = data;
     });
-
-    
   } // constructor ends
-
 }
