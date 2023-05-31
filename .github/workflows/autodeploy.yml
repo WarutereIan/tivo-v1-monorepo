@@ -40,6 +40,8 @@ jobs:
           host: ${{secrets.VPS_IP}}
           username: ${{secrets.VPS_USERNAME}}
           script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
             pm2 delete all
             cd /root/v-fb-casino-core
             git pull
