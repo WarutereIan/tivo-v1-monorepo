@@ -41,7 +41,7 @@
     "typescript": "^5.0.2",
     "validator": "^13.9.0",
     "xss-clean": "^0.1.1"
-  },
+  }, 
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/jsonwebtoken": "^9.0.2"
