@@ -20,61 +20,97 @@ import { validationResult } from "express-validator";
 export class PlayRound {
   SeasonRound!: number;
   matchIDs: string[] = [];
-  matchesMapping = new Map<string, MatchSubject>();
   matchArrays: any = [];
   matchStats: any = [];
   combinedStats!: any;
 
-  constructor(roundNumber: number) {
+  constructor(roundNumber: number, currentSeasonNumber: number) {
     /**
      * @param res is an array of objects, each object is a Match document
      */
-    Match.find({ round: roundNumber }).then((res) => {
-      res.forEach((roundMatch: any) => {
-        let homeTeam = roundMatch.homeTeam;
-        let awayTeam = roundMatch.awayTeam;
-        let matchID = roundMatch.id;
+    Match.find({ round: roundNumber, season: currentSeasonNumber }).then(
+      (res) => {
+        res.forEach((roundMatch: any) => {
+          let homeTeam = roundMatch.homeTeam;
+          let awayTeam = roundMatch.awayTeam;
+          let matchID = roundMatch.id;
 
-        let matchSubject = new MatchSubject(matchID, homeTeam, awayTeam);
+          let matchSubject = new MatchSubject(matchID, homeTeam, awayTeam);
 
-        this.matchStats.push(matchSubject.MatchStats);
-        this.matchArrays.push(matchSubject);
+          this.matchStats.push(matchSubject.MatchStats);
 
-        /*  matchSubject.MatchStats.subscribe((res:any)=>{
-                    if(res){
-                        console.log(res)
-                    }
-                    else{
-                        console.log('none')
-                    }
+          this.matchArrays.push(matchSubject);
 
-                }) */
-
-        this.combinedStats = combineLatest(this.matchStats);
-      });
-      this.matchArrays.forEach((match: MatchSubject) => {
-        match.startMatch();
-      });
-    });
+          this.combinedStats = combineLatest(this.matchStats);
+        });
+        this.matchArrays.forEach((match: MatchSubject) => {
+          match.startMatch();
+        });
+      }
+    );
   }
 
-  getLiveRoundStats(req: Request, res: Response) {
-    const headers = {
-      "Content-Type": "text/event-stream",
-      Connection: "keep-alive",
-      "Cache-Control": "no-cache",
-    };
+  async getLiveRoundStats(req: Request, res: Response) {
+    const errors = validationResult(req);
 
-    res.writeHead(200, headers);
-    this.combinedStats.subscribe((res: any) => {
-      res.write(`data: ${res}\n\n`);
-    });
+    if (!errors.isEmpty()) {
+      console.log(errors);
+      let _errors = errors.array().map((error) => {
+        return {
+          msg: error.msg,
+          field: error.param,
+          success: false,
+        };
+      })[0];
+      return res.status(400).json(_errors);
+    }
+    try {
+      const headers = {
+        "Content-Type": "text/event-stream",
+        Connection: "keep-alive",
+        "Cache-Control": "no-cache",
+      };
 
-    res.on("close", () => {
-      console.log("Client closed connection");
-    });
+      res.writeHead(200, headers);
+      this.combinedStats.subscribe((data: any) => {
+        res.write(`data: ${data}\n\n`);
+        //console.log(data);
+      });
+
+      res.on("close", () => {
+        console.log("Client closed connection");
+      });
+    } catch (err: any) {
+      console.error(err.message);
+      return res.status(500).send("Internal server error");
+    }
+  }
+
+  async getSingleGameStats(req: Request, res: Response) {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      console.log(errors);
+      let _errors = errors.array().map((error) => {
+        return {
+          msg: error.msg,
+          field: error.param,
+          success: false,
+        };
+      })[0];
+      return res.status(400).json(_errors);
+    }
+
+    try {
+      const { gameRoundID } = req.params;
+    } catch (err: any) {
+      console.error(err.message);
+      return res.status(500).send("Internal server error");
+    }
   }
 }
+
+//add or look for functionality to delete this round instance after round is completed
 
 export const seasonFixtures = {
   storeFixturesInCache: async () => {

@@ -1,14 +1,5 @@
 //import { Component, OnInit } from '@angular/core';
-import {
-  Observable,
-  combineLatest,
-  combineLatestAll,
-  concat,
-  forkJoin,
-  mergeAll,
-  startWith,
-  zip,
-} from "rxjs";
+import { combineLatest, startWith } from "rxjs";
 import { MainserviceService } from "./mainservice.service";
 
 export class StatsComponent {
@@ -27,6 +18,7 @@ export class StatsComponent {
   homeTeamTactics!: number;
   awayTeamTactics!: number;
   stats!: any;
+  matchStatus!: any;
   statsObject!: any;
   matchID!: string;
 
@@ -72,6 +64,10 @@ export class StatsComponent {
       this._mainService.awayTeamShotsOnGoal.pipe(startWith(0)),
       this._mainService.homeTeamGoals.pipe(startWith(0)),
       this._mainService.awayTeamGoals.pipe(startWith(0)),
+    ]);
+
+    this.matchStatus = combineLatest([
+      this._mainService.matchStatus.pipe(startWith(`0`)),
     ]);
 
     this._mainService.matchID.subscribe((data) => {

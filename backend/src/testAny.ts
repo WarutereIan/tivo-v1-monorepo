@@ -13,4 +13,4 @@ function startRound<PlayRound>(roundNumber: number) {
   return new PlayRound(roundNumber);
 }
 
-//export const matches = startRound(1)
+export const matches = startRound(1)

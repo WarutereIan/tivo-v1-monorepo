@@ -1,21 +1,24 @@
-import http from 'http'
-import { Observable, Subject, startWith } from 'rxjs';
+import http from "http";
+import { Observable, Subject, startWith } from "rxjs";
 
+const uefa = require("../footballMatchSimulator/uefa_clubs.json") as JSON;
 
 export class MainserviceService {
   constructor(private fs: any) {}
-    UEFAClubsJSON = this.fs.readFileSync('/home/iandev/v-fb-casino-core/backend/src/services/footballMatchSimulator/uefa_clubs.json') //can update to fetch from db, or cache, as object
-    UEFAClubsObject = JSON.parse(this.UEFAClubsJSON)
-    ClubsOnservable = Observable.create((clubs:any)=>{
-      clubs.next(this.UEFAClubsObject)
-    })  
-  
+  UEFAClubsJSON = this.fs.readFileSync(
+    "/home/iandev/v-fb-casino-core/backend/src/services/footballMatchSimulator/uefa_clubs.json"
+  ); //can update to fetch from db, or cache, as object
+  UEFAClubsObject = JSON.parse(this.UEFAClubsJSON);
+  ClubsOnservable = Observable.create((clubs: any) => {
+    clubs.next(this.UEFAClubsObject);
+  });
+
   /*getUEFANationsObjects(): Observable<any> {
     return this.fs.readFileSync('./uefa_nations.json');
   }*/
 
   matchID = new Subject<string>();
-  updateMatchID(data: any){
+  updateMatchID(data: any) {
     this.matchID.next(data);
   }
 
@@ -23,6 +26,11 @@ export class MainserviceService {
   //matchHasStarted$ = this.matchHasStarted.asObservable();
   updateMatchHasStarted(data: any) {
     this.matchHasStarted.next(data);
+  }
+
+  matchStatus = new Subject<string>();
+  updateMatchStatus(data: any) {
+    this.matchStatus.next(data);
   }
 
   // monitor tournament name change in settings
@@ -203,5 +211,4 @@ export class MainserviceService {
   updateAwayTeamGoals(data: any) {
     this.awayTeamGoals.next(data);
   }
-  
 }

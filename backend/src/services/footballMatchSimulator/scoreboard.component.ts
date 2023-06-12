@@ -1,6 +1,5 @@
-//import { Component, OnInit } from '@angular/core';
-import { startWith } from 'rxjs';
-import { MainserviceService } from './mainservice.service';
+import { startWith } from "rxjs";
+import { MainserviceService } from "./mainservice.service";
 
 export class ScoreboardComponent {
   // what came to ScoreBoard from Match Settings
@@ -102,13 +101,13 @@ export class ScoreboardComponent {
   timeAddedToH1: number = 0;
   timeAddedToH2: number = 0;
   matchStatuses: string[] = [
-    '1st half',
-    'Half time',
-    '2nd half',
-    'Full time',
-    'Not started',
-    'Extra time',
-    'Penalty shootout',
+    "1st half",
+    "Half time",
+    "2nd half",
+    "Full time",
+    "Not started",
+    "Extra time",
+    "Penalty shootout",
   ];
   matchStatus: string = this.matchStatuses[4];
   aggregateStatus: any;
@@ -138,12 +137,10 @@ export class ScoreboardComponent {
   homeTeamRedCards: number = 0;
   awayTeamRedCards: number = 0;
 
-  
-
   // squads
   homeTeamStartingLineup: any = [
     {
-      name: 'Goalkeeper',
+      name: "Goalkeeper",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -154,7 +151,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender1',
+      name: "Defender1",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -165,7 +162,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender2',
+      name: "Defender2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -176,7 +173,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender3',
+      name: "Defender3",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -187,7 +184,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender4',
+      name: "Defender4",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -198,7 +195,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder1',
+      name: "Midfielder1",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -209,7 +206,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder2',
+      name: "Midfielder2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -220,7 +217,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder3',
+      name: "Midfielder3",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -231,7 +228,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder4',
+      name: "Midfielder4",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -242,7 +239,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Forward1',
+      name: "Forward1",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -253,7 +250,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Forward2',
+      name: "Forward2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -266,7 +263,7 @@ export class ScoreboardComponent {
   ];
   homeTeamSubs: any = [
     {
-      name: 'Goalkeeper2',
+      name: "Goalkeeper2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -277,7 +274,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender5',
+      name: "Defender5",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -288,7 +285,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender6',
+      name: "Defender6",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -299,7 +296,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder5',
+      name: "Midfielder5",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -310,7 +307,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder6',
+      name: "Midfielder6",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -321,7 +318,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Forward3',
+      name: "Forward3",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -334,7 +331,7 @@ export class ScoreboardComponent {
   ];
   awayTeamStartingLineup: any = [
     {
-      name: 'Goalkeeper',
+      name: "Goalkeeper",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -345,7 +342,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender1',
+      name: "Defender1",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -356,7 +353,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender2',
+      name: "Defender2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -367,7 +364,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender3',
+      name: "Defender3",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -378,7 +375,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender4',
+      name: "Defender4",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -389,7 +386,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder1',
+      name: "Midfielder1",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -400,7 +397,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder2',
+      name: "Midfielder2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -411,7 +408,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder3',
+      name: "Midfielder3",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -422,7 +419,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder4',
+      name: "Midfielder4",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -433,7 +430,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Forward1',
+      name: "Forward1",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -444,7 +441,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Forward2',
+      name: "Forward2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -457,7 +454,7 @@ export class ScoreboardComponent {
   ];
   awayTeamSubs: any = [
     {
-      name: 'Goalkeeper2',
+      name: "Goalkeeper2",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -468,7 +465,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender5',
+      name: "Defender5",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -479,7 +476,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Defender6',
+      name: "Defender6",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -490,7 +487,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder5',
+      name: "Midfielder5",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -501,7 +498,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Midfielder6',
+      name: "Midfielder6",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -512,7 +509,7 @@ export class ScoreboardComponent {
       redCardTime: 0,
     },
     {
-      name: 'Forward3',
+      name: "Forward3",
       goalsToday: 0,
       yellowCards: {
         yellowCardsNumber: 0,
@@ -534,7 +531,6 @@ export class ScoreboardComponent {
 
   // match kickoff button
   startMatch() {
-    
     // count number of goals
     if (this.isSecondLeg) {
       this.totalHomeTeamGoals = this.homeTeam1stLegGoals + this.homeTeamGoals;
@@ -601,8 +597,10 @@ export class ScoreboardComponent {
       ) {
         this.matchSeconds = this.matchSeconds + 1;
         // when new minute starts
-        if (this.matchSeconds > 500) {  //here you vary the length of the match in actual min: workout what this equates to
+        if (this.matchSeconds > 500) {
+          //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
+
           this.matchSeconds = 0;
 
           //// 1) ADJUST POSSESSION according to teams' relative strength
@@ -1002,6 +1000,8 @@ export class ScoreboardComponent {
               // if this is not the 2nd leg
               // maybe add moments when game arbitrarily continues despite time elapsed
               this.matchStatus = this.matchStatuses[3];
+              this._mainService.updateMatchStatus(this.matchStatus);
+              //update match Status to full time in subject
               return;
             }
           }
@@ -1058,7 +1058,6 @@ export class ScoreboardComponent {
           }
         }
       }
-    
     }, 1);
 
     //this._mainService.updateMatchHasStarted(false)
@@ -1066,5 +1065,4 @@ export class ScoreboardComponent {
   playAnotherMatch() {
     location.reload();
   }
-
 }
