@@ -31,7 +31,7 @@ export const createNewSeason = async () => {
 
     if (currentSeason) {
       currentSeason.currentSeasonNumber++;
-      nextSeason = 1 + currentSeason.currentSeasonNumber;
+      nextSeason = currentSeason.currentSeasonNumber;
       await currentSeason.save();
     } else {
       return console.error("\n Current season number could not be fetched!!");

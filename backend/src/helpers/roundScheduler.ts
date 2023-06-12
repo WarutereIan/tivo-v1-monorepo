@@ -75,7 +75,10 @@ export const RoundPlayingNow = {
   },
   getNextRoundMatches: async (req: Request, res: Response) => {
     try {
-      const nextRoundMatches = await Match.find({ round: nextRound });
+      const nextRoundMatches = await Match.find({
+        round: nextRound,
+        season: currentSeasonNumber,
+      });
       return res.status(200).json({
         success: true,
         nextRoundMatches,
