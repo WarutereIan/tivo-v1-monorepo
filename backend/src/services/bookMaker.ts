@@ -13,9 +13,17 @@ import { RoundCounter } from "../models/RoundCounter";
 import { SeasonCounter } from "../models/SeasonCounter";
 import { Team } from "../models/Team";
 
+let currentSeasonCounter: number;
+
 export const setRoundOdds = async () => {
   //match odds set for current round in current season
   const currentSeason = await SeasonCounter.findOne({});
+
+  if (currentSeason) {
+    currentSeasonCounter = currentSeason.currentSeasonNumber;
+  } else {
+    return console.info("\n Couldn't fetch currentSeasonCounter @bookMaker");
+  }
 
   const currentRoundDocument = await RoundCounter.findOne();
   const currentRound = currentRoundDocument?.currentRound;
@@ -25,9 +33,10 @@ export const setRoundOdds = async () => {
   //get team stats for each home & away: points and GD
   //determine odds from the two
   //save odds in db, cache odds so that they can be regularly accessed from server
-  for await (const match of Match.find({ round: currentRound }).select(
-    "homeTeam awayTeam homeTeamOdds awayTeamOdds"
-  )) {
+  for await (const match of Match.find({
+    round: currentRound,
+    season: currentSeasonCounter,
+  }).select("homeTeam awayTeam homeTeamOdds awayTeamOdds")) {
     //home team stats
     let homeTeam = await Team.findOne({ name: match.homeTeam });
 
