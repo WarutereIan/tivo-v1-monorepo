@@ -5,10 +5,10 @@ const uefa = require("../footballMatchSimulator/uefa_clubs.json") as JSON;
 
 export class MainserviceService {
   constructor(private fs: any) {}
-  UEFAClubsJSON = this.fs.readFileSync(
+  /*  UEFAClubsJSON = this.fs.readFileSync(
     "/home/iandev/v-fb-casino-core/backend/src/services/footballMatchSimulator/uefa_clubs.json"
-  ); //can update to fetch from db, or cache, as object
-  UEFAClubsObject = JSON.parse(this.UEFAClubsJSON);
+  ); */ //can update to fetch from db, or cache, as object
+  UEFAClubsObject = uefa;
   ClubsOnservable = Observable.create((clubs: any) => {
     clubs.next(this.UEFAClubsObject);
   });
