@@ -15,8 +15,8 @@ import { Team } from "../models/Team";
 
 export const setRoundOdds = async () => {
   //match odds set for current round in current season
-  const currentSeason = await SeasonCounter.findOne({})
-  
+  const currentSeason = await SeasonCounter.findOne({});
+
   const currentRoundDocument = await RoundCounter.findOne();
   const currentRound = currentRoundDocument?.currentRound;
 
@@ -60,7 +60,7 @@ export const setRoundOdds = async () => {
     //adjsutment: minimum odds = 1.00,
     //max odds = 1.8
 
-    const randomFactorH = Math.random() * 0.15 + 0.15;
+    /* const randomFactorH = Math.random() * 0.15 + 0.15;
     const randomFactorA = Math.random() * 0.15 + 0.15;
 
     const homeOddsFactor =
@@ -81,13 +81,28 @@ export const setRoundOdds = async () => {
 
     const homeOdds = 1.0 + (homeOddsFactor - Math.floor(homeOddsFactor));
 
-    const awayOdds = 1.0 + (awayOddsFactor - Math.floor(awayOddsFactor));
+    const awayOdds = 1.0 + (awayOddsFactor - Math.floor(awayOddsFactor)); */
 
-    match.homeTeamOdds = homeOdds;
-    match.awayTeamOdds = awayOdds;
+    const oddsHome =
+      Math.pow(10, homeTeamPoints / 10) *
+      Math.pow(10, homeTeamGoalDifference / 20);
+    const oddsAway =
+      Math.pow(10, awayTeamPoints / 10) *
+      Math.pow(10, awayTeamGoalDifference / 20);
+
+    const totalOdds = oddsHome + oddsAway;
+
+    const probabilityHome = oddsHome / totalOdds;
+    const probabilityAway = oddsAway / totalOdds;
+
+    const finalOddsHome = 2 - probabilityHome;
+    const finalOddsAway = 2 - probabilityAway;
+
+    match.homeTeamOdds = finalOddsHome;
+    match.awayTeamOdds = finalOddsAway;
     await match.save();
     console.info(
-      `Set odds for match ${match.id} as home: ${homeOdds} and away: ${awayOdds}`
+      `Set odds for match ${match.id} as home: ${finalOddsHome} and away: ${finalOddsAway}`
     );
   }
 
@@ -95,8 +110,6 @@ export const setRoundOdds = async () => {
 };
 
 //add functionality for correct score prediction:
-  //probability will be determined by gd
-  //so there will be a correct score prediction field in req body
-export const setCorrectScoreOdds = async () => {
-  
-}
+//probability will be determined by gd
+//so there will be a correct score prediction field in req body
+export const setCorrectScoreOdds = async () => {};

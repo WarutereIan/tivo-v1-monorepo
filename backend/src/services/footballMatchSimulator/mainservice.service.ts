@@ -1,5 +1,4 @@
-import http from "http";
-import { Observable, Subject, startWith } from "rxjs";
+import { Observable, Subject } from "rxjs";
 
 const uefa = require("../footballMatchSimulator/uefa_clubs.json") as JSON;
 

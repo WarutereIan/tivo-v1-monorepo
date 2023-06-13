@@ -11,7 +11,7 @@
     "create-initial-seasonCounter-document": " ts-node src/scripts/create-initial-season-counter"
   },
   "keywords": [],
-  "author": "",
+  "author": "Warutere Ian",
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
