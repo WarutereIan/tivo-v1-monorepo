@@ -32,8 +32,6 @@ export const createNewSeason = async () => {
         team.goal_difference =
         team.goals_conceded =
         team.goals_scored =
-        team.goals_scored_away =
-        team.goals_scored_home =
           0;
       await team.save();
     }

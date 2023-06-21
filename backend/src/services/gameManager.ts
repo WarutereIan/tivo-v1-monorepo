@@ -4,6 +4,7 @@ import { MatchSubject } from "./MatchSubject";
 import { combineLatest } from "rxjs";
 import { RedisClient } from "../config/db";
 import { validationResult } from "express-validator";
+import { Team } from "../models/Team";
 
 /**
  * params:
@@ -34,6 +35,22 @@ export class PlayRound {
           let homeTeam = roundMatch.homeTeam;
           let awayTeam = roundMatch.awayTeam;
           let matchID = roundMatch.id;
+
+          if (roundNumber === 0) {
+            //reset goal totals after league averages and team strengths have been calculated from the previous season
+            Team.findOneAndUpdate(
+              { name: homeTeam },
+              { goals_scored_home: 0, goals_scored_away: 0 }
+            ).then((res: any) => {
+              console.log("reset team goals for", homeTeam);
+            });
+            Team.findOneAndUpdate(
+              { name: awayTeam },
+              { goals_scored_home: 0, goals_scored_away: 0 }
+            ).then((res: any) => {
+              console.log("reset team goals for", awayTeam);
+            });
+          }
 
           let matchSubject = new MatchSubject(matchID, homeTeam, awayTeam);
 

@@ -31,6 +31,15 @@ const MatchSchema = new Schema<IMatch>({
   season: {
     type: Number,
   },
+  homeTeam_goal_distribution_by_probability: {
+    type: [Number],
+  },
+  awayTeam_goal_distribution_by_probability: {
+    type: [Number],
+  },
+  drawOdds: {
+    type: Number,
+  },
 });
 
 export const Match = model<IMatch>("Match", MatchSchema);

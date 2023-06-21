@@ -8,7 +8,8 @@
     "start": "ts-node src/server.ts",
     "create-league": "ts-node src/scripts/create-league",
     "create-initial-fixtures": "ts-node src/scripts/create-initial-fixtures",
-    "create-initial-seasonCounter-document": " ts-node src/scripts/create-initial-season-counter"
+    "create-initial-seasonCounter-document": " ts-node src/scripts/create-initial-season-counter",
+    "clear-dbs": "ts-node src/scripts/clear-dbs"
   },
   "keywords": [],
   "author": "Warutere Ian",

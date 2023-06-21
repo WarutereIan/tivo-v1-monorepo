@@ -12,6 +12,7 @@ import { Match } from "../models/Match";
 import { RoundCounter } from "../models/RoundCounter";
 import { SeasonCounter } from "../models/SeasonCounter";
 import { Team } from "../models/Team";
+import { MatchGoalDistributionManager } from "./calculateGoalsOdds";
 
 let currentSeasonCounter: number;
 
@@ -42,6 +43,10 @@ export class Odds {
       let homeTeam = await Team.findOne({ name: match.homeTeam });
 
       let awayTeam = await Team.findOne({ name: match.awayTeam });
+
+      await MatchGoalDistributionManager.calculateMatchGoalDistribution(
+        match.id
+      );
 
       let homeTeamPoints: number,
         awayTeamPoints: number,
@@ -106,6 +111,7 @@ export class Odds {
 
       match.homeTeamOdds = finalOddsHome;
       match.awayTeamOdds = finalOddsAway;
+      match.drawOdds = finalOddsDraw;
       await match.save();
       console.info(
         `Set odds for match ${match.id} as home: ${finalOddsHome}, and away: ${finalOddsAway}, draw`,
@@ -116,9 +122,9 @@ export class Odds {
     return console.info(`Match odds for round ${currentRound} set`);
   };
 
-  static setTotalGoalsOdds = async () => {};
+  static setTotalGoalsOdds = async () => {}; //will be set from probability distribution array
 
-  static calculateCorrectScorePredictionOdds = async () => {};
+  static calculateCorrectScorePredictionOdds = async () => {}; // will also be set from probability distribution array
 
   private calculateTotalGoalPredictionOdds(
     averageGoals: number,
