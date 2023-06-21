@@ -37,7 +37,7 @@ export async function calculateTeamStrengths() {
       const teamTotalHomeGoals = team.goals_scored_home;
       //const teamTotalAwayGoals = team.goals_scored_away
 
-      const attackStrength = teamTotalHomeGoals / (19 * leagueGoalsAverageHome);
+      const attackStrength = teamTotalHomeGoals / (38 * leagueGoalsAverageHome);
       const defenseStrength = 1 / attackStrength;
 
       team.attack_strength = attackStrength;
