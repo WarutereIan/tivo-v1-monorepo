@@ -15,110 +15,130 @@ import { Team } from "../models/Team";
 
 let currentSeasonCounter: number;
 
-export const setRoundOdds = async () => {
-  //match odds set for current round in current season
-  const currentSeason = await SeasonCounter.findOne({});
+export class Odds {
+  static setRoundOds = async () => {
+    //match odds set for current round in current season
+    const currentSeason = await SeasonCounter.findOne({});
 
-  if (currentSeason) {
-    currentSeasonCounter = currentSeason.currentSeasonNumber;
-  } else {
-    return console.info("\n Couldn't fetch currentSeasonCounter @bookMaker");
-  }
+    if (currentSeason) {
+      currentSeasonCounter = currentSeason.currentSeasonNumber;
+    } else {
+      return console.info("\n Couldn't fetch currentSeasonCounter @bookMaker");
+    }
 
-  const currentRoundDocument = await RoundCounter.findOne();
-  const currentRound = currentRoundDocument?.currentRound;
+    const currentRoundDocument = await RoundCounter.findOne();
+    const currentRound = currentRoundDocument?.currentRound;
 
-  //get matches in current round from Matches.find({round: currentRound})
-  //get team names from the matches
-  //get team stats for each home & away: points and GD
-  //determine odds from the two
-  //save odds in db, cache odds so that they can be regularly accessed from server
-  for await (const match of Match.find({
-    round: currentRound,
-    season: currentSeasonCounter,
-  }).select("homeTeam awayTeam homeTeamOdds awayTeamOdds")) {
-    //home team stats
-    let homeTeam = await Team.findOne({ name: match.homeTeam });
+    //get matches in current round from Matches.find({round: currentRound})
+    //get team names from the matches
+    //get team stats for each home & away: points and GD
+    //determine odds from the two
+    //save odds in db, cache odds so that they can be regularly accessed from server
+    for await (const match of Match.find({
+      round: currentRound,
+      season: currentSeasonCounter,
+    }).select("homeTeam awayTeam homeTeamOdds awayTeamOdds")) {
+      //home team stats
+      let homeTeam = await Team.findOne({ name: match.homeTeam });
 
-    let awayTeam = await Team.findOne({ name: match.awayTeam });
+      let awayTeam = await Team.findOne({ name: match.awayTeam });
 
-    let homeTeamPoints: number,
-      awayTeamPoints: number,
-      homeTeamGoalDifference: number,
-      awayTeamGoalDifference: number;
+      let homeTeamPoints: number,
+        awayTeamPoints: number,
+        homeTeamGoalDifference: number,
+        awayTeamGoalDifference: number;
 
-    if (homeTeam) {
-      homeTeamPoints = homeTeam.points;
-      homeTeamGoalDifference = homeTeam.goal_difference;
-      console.log(
-        "homeTeam points and gd: ",
-        homeTeamPoints,
-        +" ",
-        +homeTeamGoalDifference
+      if (homeTeam) {
+        homeTeamPoints = homeTeam.points + Math.random() * 0.5;
+        homeTeamGoalDifference = homeTeam.goal_difference + Math.random() * 0.8;
+      } else {
+        return console.error("could not fetch home team @setMatchOdds!");
+      }
+      if (awayTeam) {
+        awayTeamPoints = awayTeam.points + Math.random() * 1;
+        awayTeamGoalDifference = awayTeam.goal_difference + Math.random() * 0.8;
+      } else {
+        return console.error("could not fetch away team @setMatchOdds!");
+      }
+
+      const totalGD = Math.abs(homeTeamGoalDifference + awayTeamGoalDifference);
+      const totalPoints = homeTeamPoints + awayTeamPoints;
+
+      const weightedPointsHome = (homeTeamPoints * totalGD) / totalPoints;
+
+      const weightedPointsAway = (awayTeamPoints * totalGD) / totalPoints;
+
+      const probabilityHome =
+        (0.1 * weightedPointsHome) / (weightedPointsHome + weightedPointsAway);
+      const probabilityAway =
+        (0.1 * weightedPointsAway) / (weightedPointsHome + weightedPointsAway);
+
+      const drawProbability = Math.random() * 0.2;
+
+      const homeOdds = probabilityHome;
+      const awayOdds = probabilityAway;
+      const drawOdds = drawProbability;
+
+      const marginPercentage = 0.3;
+
+      const overround = homeOdds + awayOdds + drawOdds;
+
+      const margin = overround * marginPercentage;
+
+      const adjustedHomeProbability = (homeOdds / overround) * (1 + margin);
+      const adjustedAwayProbability = (awayOdds / overround) * (1 + margin);
+      const adjustedDrawProbability = (drawOdds / overround) * (1 + margin);
+
+      const adjustedHomeOdds = 1 / adjustedHomeProbability;
+      const adjustedAwayOdds = 1 / adjustedAwayProbability;
+      const adjustedDrawOdds = 1 / adjustedDrawProbability;
+
+      let finalOddsHome = Number(adjustedHomeOdds.toFixed(2));
+      let finalOddsAway = Number(adjustedAwayOdds.toFixed(2));
+      let finalOddsDraw = Number(adjustedDrawOdds.toFixed(2));
+
+      if (finalOddsHome >= 4)
+        finalOddsHome = Number((Math.random() * 3 + 1).toFixed(2));
+      if (finalOddsAway >= 4)
+        finalOddsAway = Number((Math.random() * 3 + 1).toFixed(2));
+      if (finalOddsDraw >= 5)
+        finalOddsDraw = Number((Math.random() * 4 + 1).toFixed(2));
+
+      match.homeTeamOdds = finalOddsHome;
+      match.awayTeamOdds = finalOddsAway;
+      await match.save();
+      console.info(
+        `Set odds for match ${match.id} as home: ${finalOddsHome}, and away: ${finalOddsAway}, draw`,
+        finalOddsDraw
       );
-    } else {
-      return console.error("could not fetch home team @setMatchOdds!");
-    }
-    if (awayTeam) {
-      awayTeamPoints = awayTeam.points;
-      awayTeamGoalDifference = awayTeam.goal_difference;
-    } else {
-      return console.error("could not fetch away team @setMatchOdds!");
     }
 
-    //adjsutment: minimum odds = 1.00,
-    //max odds = 1.8
+    return console.info(`Match odds for round ${currentRound} set`);
+  };
 
-    /* const randomFactorH = Math.random() * 0.15 + 0.15;
-    const randomFactorA = Math.random() * 0.15 + 0.15;
+  static setTotalGoalsOdds = async () => {};
 
-    const homeOddsFactor =
-      Math.log10(homeTeamPoints + 0.1) -
-      Math.floor(Math.log10(homeTeamPoints + 0.1)) +
-      Math.sign(homeTeamGoalDifference) *
-        Math.log10(Math.abs(homeTeamGoalDifference + 0.1)) -
-      Math.floor(Math.log10(Math.abs(homeTeamGoalDifference + 0.1))) +
-      randomFactorH;
+  static calculateCorrectScorePredictionOdds = async () => {};
 
-    const awayOddsFactor =
-      Math.log10(awayTeamPoints + 0.1) -
-      Math.floor(Math.log10(awayTeamPoints + 0.1)) +
-      Math.sign(awayTeamGoalDifference) *
-        Math.log10(Math.abs(awayTeamGoalDifference + 0.1)) -
-      Math.floor(Math.log10(Math.abs(homeTeamGoalDifference + 0.1))) +
-      randomFactorA;
+  private calculateTotalGoalPredictionOdds(
+    averageGoals: number,
+    predictedGoals: number
+  ) {
+    // Calculate the odds based on the average goals
+    const odds =
+      (Math.pow(averageGoals, predictedGoals) * Math.exp(-averageGoals)) /
+      this.factorial(predictedGoals);
 
-    const homeOdds = 1.0 + (homeOddsFactor - Math.floor(homeOddsFactor));
-
-    const awayOdds = 1.0 + (awayOddsFactor - Math.floor(awayOddsFactor)); */
-
-    const oddsHome =
-      Math.pow(10, homeTeamPoints / 10) *
-      Math.pow(10, homeTeamGoalDifference / 20);
-    const oddsAway =
-      Math.pow(10, awayTeamPoints / 10) *
-      Math.pow(10, awayTeamGoalDifference / 20);
-
-    const totalOdds = oddsHome + oddsAway;
-
-    const probabilityHome = oddsHome / totalOdds;
-    const probabilityAway = oddsAway / totalOdds;
-
-    const finalOddsHome = 2 - probabilityHome;
-    const finalOddsAway = 2 - probabilityAway;
-
-    match.homeTeamOdds = finalOddsHome;
-    match.awayTeamOdds = finalOddsAway;
-    await match.save();
-    console.info(
-      `Set odds for match ${match.id} as home: ${finalOddsHome} and away: ${finalOddsAway}`
-    );
+    // Return the goal prediction odds
+    return odds;
   }
 
-  return console.info(`Match odds for round ${currentRound} set`);
-};
-
-//add functionality for correct score prediction:
-//probability will be determined by gd
-//so there will be a correct score prediction field in req body
-export const setCorrectScoreOdds = async () => {};
+  // Helper function to calculate the factorial of a number
+  private factorial(n: number): number {
+    if (n === 0 || n === 1) {
+      return 1;
+    } else {
+      return n * this.factorial(n - 1);
+    }
+  }
+}

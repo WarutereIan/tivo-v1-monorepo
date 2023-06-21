@@ -2,10 +2,10 @@ import { Request, Response, request, response } from "express";
 import { RoundCounter } from "../models/RoundCounter";
 import { PlayRound } from "../services/gameManager";
 import { RedisClient } from "../config/db";
-import { setRoundOdds } from "../services/bookMaker";
 import { Match } from "../models/Match";
 import { createNewSeason } from "../services/resetSeason";
 import { SeasonCounter } from "../models/SeasonCounter";
+import { calculateTeamStrengths } from "../services/calculateGoalsOdds";
 
 let liveRound: PlayRound,
   currentRound: number,
@@ -44,6 +44,7 @@ export const RoundPlayingNow = {
       }
       if (currentRound >= 37) {
         //reset round counter to zero in mongodb and create new season
+        await calculateTeamStrengths(); //make it synchronous so that strengths are calculated b4 reset
         await createNewSeason();
         return console.info(
           "\n Final round in the season reached. Set up a new season! \n"

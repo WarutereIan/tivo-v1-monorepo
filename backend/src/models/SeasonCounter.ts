@@ -6,6 +6,22 @@ const SeasonSchema = new Schema<ISeason>({
     type: Number,
     required: true,
   },
+  total_goals_scored_away_last_season: {
+    type: Number,
+    required: true,
+  },
+  total_goals_scored_home_last_season: {
+    type: Number,
+    required: true,
+  },
+  last_season_away_goals_average: {
+    type: Number,
+    required: true,
+  },
+  last_season_home_goals_average: {
+    type: Number,
+    required: true,
+  },
 });
 
 export const SeasonCounter = model<ISeason>("SeasonCounter", SeasonSchema);

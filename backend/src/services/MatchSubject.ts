@@ -75,8 +75,18 @@ export class MatchSubject {
         console.log("match ended", this.matchID);
         this.MatchStats.next("Game Ended");
 
-        console.log("home team goals", this.homeTeamGoalsResult);
-        console.log("away team goals", this.awayTeamGoalsResult);
+        console.log(
+          "home team goals",
+          this.homeTeam,
+          " ",
+          this.homeTeamGoalsResult
+        );
+        console.log(
+          "away team goals",
+          this.awayTeam,
+          " ",
+          this.awayTeamGoalsResult
+        );
 
         this.homeTeamGoalDifference =
           this.homeTeamGoalsResult - this.awayTeamGoalsResult;
@@ -123,15 +133,21 @@ export class MatchSubject {
 
         //Update home team stats:
         await updateTeam(
+          "home",
           this.homeTeam,
           this.homeTeamPoints,
-          this.homeTeamGoalDifference
+          this.homeTeamGoalDifference,
+          this.homeTeamGoalsResult,
+          this.awayTeamGoalsResult
         );
         //Update away team stats:
         await updateTeam(
+          "away",
           this.awayTeam,
           this.awayTeamPoints,
-          this.awayTeamGoalDifference
+          this.awayTeamGoalDifference,
+          this.awayTeamGoalsResult,
+          this.homeTeamGoalsResult
         );
       }
     });
