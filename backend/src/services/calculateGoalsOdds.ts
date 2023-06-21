@@ -23,13 +23,17 @@ import { ISeason } from "../types/ISeason";
  * @Dev function below will be called at the end of every season
  */
 export async function calculateTeamStrengths() {
-  let leagueGoalsAverageHome: any, leagueGoalsAverageAway: any;
+  let leagueGoalsAverageHome: any,
+    leagueGoalsAverageAway: any,
+    leagueGoalsAverage: any;
   try {
     let season = await SeasonCounter.findOne();
 
     if (season) {
       leagueGoalsAverageHome = season.last_season_home_goals_average;
       leagueGoalsAverageAway = season.last_season_away_goals_average;
+      leagueGoalsAverage =
+        (leagueGoalsAverageAway + leagueGoalsAverageHome) / 2;
     } else {
       throw new Error("Could not get season at calculateTeamOdds");
     }
@@ -38,10 +42,9 @@ export async function calculateTeamStrengths() {
       const teamTotalHomeGoals = team.goals_scored_home;
       const teamTotalAwayGoals = team.goals_scored_away;
 
-      const attackStrength =
-        teamTotalHomeGoals / (380 * leagueGoalsAverageHome);
+      const attackStrength = teamTotalHomeGoals / (19 * leagueGoalsAverageHome);
       const defenseStrength =
-        teamTotalAwayGoals / (380 * leagueGoalsAverageAway);
+        teamTotalAwayGoals / (19 * leagueGoalsAverageAway);
 
       team.attack_strength = attackStrength;
       team.defense_strength = defenseStrength;
