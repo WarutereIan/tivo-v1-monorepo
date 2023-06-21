@@ -20,28 +20,6 @@ let dropMatches, dropTeams, dropRoundCounter, dropSeasonCounter;
 
 (async () => {
   await connectDB();
-
-  //drop the collections to be reset: matches, roundcounters, teams, season counters
-  //find means to make it synchronous so that creation begins only after deletion
-
-  /* dropMatches = await mongoose.connection.db.dropCollection("matches");
-  dropTeams = await mongoose.connection.db.dropCollection("teams");
-  dropRoundCounter = await mongoose.connection.db.dropCollection(
-    "roundcounters"
-  );
-  dropSeasonCounter = await mongoose.connection.db.dropCollection(
-    "seasoncounters"
-  ); */
-
-  /* Promise.all([
-    dropMatches,
-    dropRoundCounter,
-    dropSeasonCounter,
-    dropTeams,
-  ]).then((res) => {
-    console.log(res);
-    resetLeague();
-  }); */
 })();
 
 function resetLeague() {
@@ -100,6 +78,8 @@ function resetLeague() {
         awayTeam: awayTeam,
         round: i,
         season: 0,
+        homeTeam_goal_distribution_by_probability: [],
+        awayTeam_goal_distribution_by_probability: [],
       }).then((res) => {
         //console.log(res);
       });
@@ -118,10 +98,10 @@ function resetLeague() {
       goals_conceded: 0,
       goals_scored: 0,
       points: 0,
-      goals_scored_away: 0,
-      goals_scored_home: 0,
-      attack_strength: 0,
-      defense_strength: 0,
+      goals_scored_away: 1,
+      goals_scored_home: 1,
+      attack_strength: 1,
+      defense_strength: 1,
     }).then(() => console.log("Teams created in db"));
   }
 
@@ -132,10 +112,10 @@ function resetLeague() {
   SeasonCounter.create({
     //create new season counter
     currentSeasonNumber: 0,
-    total_goals_scored_away_last_season: 0,
-    total_goals_scored_home_last_season: 0,
-    last_season_away_goals_average: 0,
-    last_season_home_goals_average: 0,
+    total_goals_scored_away_last_season: 1,
+    total_goals_scored_home_last_season: 1,
+    last_season_away_goals_average: 1,
+    last_season_home_goals_average: 1,
   }).then((res) => {
     console.log("Created inital season counter document \n", res);
   });

@@ -44,11 +44,16 @@ export const RoundPlayingNow = {
       }
       if (currentRound >= 37) {
         //reset round counter to zero in mongodb and create new season
-        await calculateTeamStrengths(); //make it synchronous so that strengths are calculated b4 reset
-        await createNewSeason();
+        await createNewSeason(); //also creates league averages from last season's data, to be used in calculating team strengths in next step
         return console.info(
           "\n Final round in the season reached. Set up a new season! \n"
         );
+      }
+
+      //calculate teams' strengths from last season
+      if (currentRound === 0) {
+        await calculateTeamStrengths();
+        //score counters are reset after this is done
       }
       await RedisClient.set("roundStartedBool", "true");
       liveRound = new PlayRound(currentRound, currentSeasonNumber); //add means to check whether round is completed

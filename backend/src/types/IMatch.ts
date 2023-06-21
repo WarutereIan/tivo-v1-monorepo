@@ -16,4 +16,6 @@ export interface IMatch {
   awayTeamOdds: number;
   drawOdds: number;
   season: number;
+  homeTeam_goal_distribution_by_probability: number[];
+  awayTeam_goal_distribution_by_probability: number[];
 }

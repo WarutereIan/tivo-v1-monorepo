@@ -12,4 +12,5 @@ export interface ITeam {
   points: number;
   attack_strength: number;
   defense_strength: number;
+
 }
