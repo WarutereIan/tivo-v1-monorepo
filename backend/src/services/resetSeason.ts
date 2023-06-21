@@ -40,10 +40,10 @@ export const createNewSeason = async () => {
 
     //let all teams be accounted for before storing new season stats
     last_season_away_goals_average = Number(
-      (total_goals_scored_away_last_season / 19).toFixed(3)
+      (total_goals_scored_away_last_season / 38).toFixed(3)
     );
     last_season_home_goals_average = Number(
-      (total_goals_scored_home_last_season / 19).toFixed(3)
+      (total_goals_scored_home_last_season / 38).toFixed(3)
     );
     console.log(
       `
