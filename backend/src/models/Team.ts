@@ -30,6 +30,30 @@ const TeamSchema = new Schema<ITeam>({
     type: Number,
     required: true,
   },
+  goals_conceded: {
+    type: Number,
+    required: true,
+  },
+  goals_scored: {
+    type: Number,
+    required: true,
+  },
+  goals_scored_away: {
+    type: Number,
+    required: true,
+  },
+  goals_scored_home: {
+    type: Number,
+    required: true,
+  },
+  attack_strength: {
+    type: Number,
+    required: true,
+  },
+  defense_strength: {
+    type: Number,
+    required: true,
+  },
 });
 
 export const Team = model<ITeam>("Team", TeamSchema);

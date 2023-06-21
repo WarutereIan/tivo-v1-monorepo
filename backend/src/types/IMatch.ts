@@ -14,5 +14,6 @@ export interface IMatch {
   round: number;
   homeTeamOdds: number;
   awayTeamOdds: number;
+  drawOdds: number;
   season: number;
 }
