@@ -14,11 +14,19 @@ const SeasonSchema = new Schema<ISeason>({
     type: Number,
     required: true,
   },
-  last_season_away_goals_average: {
+  last_season_away_mean_conceded: {
     type: Number,
     required: true,
   },
-  last_season_home_goals_average: {
+  last_season_home_mean_conceded: {
+    type: Number,
+    required: true,
+  },
+  last_season_away_mean_scored: {
+    type: Number,
+    required: true,
+  },
+  last_season_home_mean_scored: {
     type: Number,
     required: true,
   },

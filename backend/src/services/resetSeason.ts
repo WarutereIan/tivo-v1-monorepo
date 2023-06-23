@@ -7,6 +7,7 @@ import { RoundCounter } from "../models/RoundCounter";
 import { SeasonCounter } from "../models/SeasonCounter";
 import { Team } from "../models/Team";
 import { Match } from "../models/Match";
+import { MatchGoalDistributionManager } from "./calculateGoalsOdds";
 
 let nextSeason: number;
 
@@ -14,8 +15,12 @@ export const createNewSeason = async () => {
   try {
     let total_goals_scored_away_last_season: number = 0,
       total_goals_scored_home_last_season: number = 0,
-      last_season_away_goals_average: number = 0,
-      last_season_home_goals_average: number = 0;
+      total_goals_conceded_away_last_season: number = 0,
+      total_goals_conceded_home_last_season: number = 0,
+      last_season_away_mean_conceded: number = 0,
+      last_season_home_mean_conceded: number = 0,
+      last_season_away_mean_scored: number = 0,
+      last_season_home_mean_scored: number = 0;
 
     await RoundCounter.findOneAndUpdate({}, { currentRound: 0 });
     console.log("\n reset current season  counter");
@@ -23,6 +28,8 @@ export const createNewSeason = async () => {
     for await (const team of Team.find({})) {
       total_goals_scored_away_last_season += team.goals_scored_away;
       total_goals_scored_home_last_season += team.goals_scored_home;
+      total_goals_conceded_away_last_season += team.goals_conceded_away;
+      total_goals_conceded_home_last_season += team.goals_conceded_home;
 
       team.played =
         team.won =
@@ -32,6 +39,10 @@ export const createNewSeason = async () => {
         team.goal_difference =
         team.goals_conceded =
         team.goals_scored =
+        team.goals_conceded_away =
+        team.goals_conceded_home =
+        team.goals_scored_away =
+        team.goals_scored_home =
           0;
       await team.save();
     }
@@ -39,24 +50,19 @@ export const createNewSeason = async () => {
     console.log("\n Reset team stats for a new season");
 
     //let all teams be accounted for before storing new season stats
-    last_season_away_goals_average = Number(
+    last_season_away_mean_scored = Number(
       (total_goals_scored_away_last_season / 380).toFixed(3)
     );
-    last_season_home_goals_average = Number(
+    last_season_home_mean_scored = Number(
       (total_goals_scored_home_last_season / 380).toFixed(3)
     );
-    console.log(
-      `
-      last season stats: total away`,
-      total_goals_scored_away_last_season,
-      ` 
-        total home: `,
-      total_goals_scored_home_last_season,
-      `
-        avergages away and home: `,
-      last_season_away_goals_average,
-      ` `,
-      last_season_home_goals_average
+
+    last_season_away_mean_conceded = Number(
+      (total_goals_conceded_away_last_season / 380).toFixed(3)
+    );
+
+    last_season_home_mean_conceded = Number(
+      (total_goals_conceded_home_last_season / 380).toFixed(3)
     );
 
     const season = await SeasonCounter.findOne({});
@@ -67,8 +73,10 @@ export const createNewSeason = async () => {
         total_goals_scored_away_last_season;
       season.total_goals_scored_home_last_season =
         total_goals_scored_home_last_season;
-      season.last_season_away_goals_average = last_season_away_goals_average;
-      season.last_season_home_goals_average = last_season_home_goals_average;
+      season.last_season_away_mean_conceded = last_season_away_mean_conceded;
+      season.last_season_home_mean_conceded = last_season_home_mean_conceded;
+      season.last_season_away_mean_scored = last_season_away_mean_scored;
+      season.last_season_home_mean_scored = last_season_home_mean_scored;
 
       nextSeason = season.currentSeasonNumber;
       await season.save();
@@ -144,4 +152,6 @@ const createSeasonMatchups = async () => {
       });
     }
   }
+
+  await MatchGoalDistributionManager.updateLeagueAverages(); //placed here so that averages are updated in synchronous order, after league averages have been updated.
 };

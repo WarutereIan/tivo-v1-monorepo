@@ -18,108 +18,120 @@ let currentSeasonCounter: number;
 
 export class Odds {
   static setRoundOds = async () => {
-    //match odds set for current round in current season
-    const currentSeason = await SeasonCounter.findOne({});
+    try {
+      //match odds set for current round in current season
+      const currentSeason = await SeasonCounter.findOne({});
 
-    if (currentSeason) {
-      currentSeasonCounter = currentSeason.currentSeasonNumber;
-    } else {
-      return console.info("\n Couldn't fetch currentSeasonCounter @bookMaker");
-    }
-
-    const currentRoundDocument = await RoundCounter.findOne();
-    const currentRound = currentRoundDocument?.currentRound;
-
-    //get matches in current round from Matches.find({round: currentRound})
-    //get team names from the matches
-    //get team stats for each home & away: points and GD
-    //determine odds from the two
-    //save odds in db, cache odds so that they can be regularly accessed from server
-    for await (const match of Match.find({
-      round: currentRound,
-      season: currentSeasonCounter,
-    }).select("homeTeam awayTeam homeTeamOdds awayTeamOdds")) {
-      //home team stats
-      let homeTeam = await Team.findOne({ name: match.homeTeam });
-
-      let awayTeam = await Team.findOne({ name: match.awayTeam });
-
-      await MatchGoalDistributionManager.calculateMatchGoalDistribution(
-        match.id
-      );
-
-      let homeTeamPoints: number,
-        awayTeamPoints: number,
-        homeTeamGoalDifference: number,
-        awayTeamGoalDifference: number;
-
-      if (homeTeam) {
-        homeTeamPoints = homeTeam.points + Math.random() * 0.5;
-        homeTeamGoalDifference = homeTeam.goal_difference + Math.random() * 0.8;
+      if (currentSeason) {
+        currentSeasonCounter = currentSeason.currentSeasonNumber;
       } else {
-        return console.error("could not fetch home team @setMatchOdds!");
-      }
-      if (awayTeam) {
-        awayTeamPoints = awayTeam.points + Math.random() * 1;
-        awayTeamGoalDifference = awayTeam.goal_difference + Math.random() * 0.8;
-      } else {
-        return console.error("could not fetch away team @setMatchOdds!");
+        return console.info(
+          "\n Couldn't fetch currentSeasonCounter @bookMaker"
+        );
       }
 
-      const totalGD = Math.abs(homeTeamGoalDifference + awayTeamGoalDifference);
-      const totalPoints = homeTeamPoints + awayTeamPoints;
+      const currentRoundDocument = await RoundCounter.findOne();
+      const currentRound = currentRoundDocument?.currentRound;
 
-      const weightedPointsHome = (homeTeamPoints * totalGD) / totalPoints;
+      //get matches in current round from Matches.find({round: currentRound})
+      //get team names from the matches
+      //get team stats for each home & away: points and GD
+      //determine odds from the two
+      //save odds in db, cache odds so that they can be regularly accessed from server
+      for await (const match of Match.find({
+        round: currentRound,
+        season: currentSeasonCounter,
+      }).select("homeTeam awayTeam homeTeamOdds awayTeamOdds")) {
+        //home team stats
+        let homeTeam = await Team.findOne({ name: match.homeTeam });
 
-      const weightedPointsAway = (awayTeamPoints * totalGD) / totalPoints;
+        let awayTeam = await Team.findOne({ name: match.awayTeam });
 
-      const probabilityHome =
-        (0.1 * weightedPointsHome) / (weightedPointsHome + weightedPointsAway);
-      const probabilityAway =
-        (0.1 * weightedPointsAway) / (weightedPointsHome + weightedPointsAway);
+        await MatchGoalDistributionManager.calculateMatchGoalDistribution(
+          match.id
+        );
 
-      const drawProbability = Math.random() * 0.2;
+        let homeTeamPoints: number,
+          awayTeamPoints: number,
+          homeTeamGoalDifference: number,
+          awayTeamGoalDifference: number;
 
-      const homeOdds = probabilityHome;
-      const awayOdds = probabilityAway;
-      const drawOdds = drawProbability;
+        if (homeTeam) {
+          homeTeamPoints = homeTeam.points + Math.random() * 0.5;
+          homeTeamGoalDifference =
+            homeTeam.goal_difference + Math.random() * 0.8;
+        } else {
+          return console.error("could not fetch home team @setMatchOdds!");
+        }
+        if (awayTeam) {
+          awayTeamPoints = awayTeam.points + Math.random() * 1;
+          awayTeamGoalDifference =
+            awayTeam.goal_difference + Math.random() * 0.8;
+        } else {
+          return console.error("could not fetch away team @setMatchOdds!");
+        }
 
-      const marginPercentage = 0.3;
+        const totalGD = Math.abs(
+          homeTeamGoalDifference + awayTeamGoalDifference
+        );
+        const totalPoints = homeTeamPoints + awayTeamPoints;
 
-      const overround = homeOdds + awayOdds + drawOdds;
+        const weightedPointsHome = (homeTeamPoints * totalGD) / totalPoints;
 
-      const margin = overround * marginPercentage;
+        const weightedPointsAway = (awayTeamPoints * totalGD) / totalPoints;
 
-      const adjustedHomeProbability = (homeOdds / overround) * (1 + margin);
-      const adjustedAwayProbability = (awayOdds / overround) * (1 + margin);
-      const adjustedDrawProbability = (drawOdds / overround) * (1 + margin);
+        const probabilityHome =
+          (0.1 * weightedPointsHome) /
+          (weightedPointsHome + weightedPointsAway);
+        const probabilityAway =
+          (0.1 * weightedPointsAway) /
+          (weightedPointsHome + weightedPointsAway);
 
-      const adjustedHomeOdds = 1 / adjustedHomeProbability;
-      const adjustedAwayOdds = 1 / adjustedAwayProbability;
-      const adjustedDrawOdds = 1 / adjustedDrawProbability;
+        const drawProbability = Math.random() * 0.2;
 
-      let finalOddsHome = Number(adjustedHomeOdds.toFixed(2));
-      let finalOddsAway = Number(adjustedAwayOdds.toFixed(2));
-      let finalOddsDraw = Number(adjustedDrawOdds.toFixed(2));
+        const homeOdds = probabilityHome;
+        const awayOdds = probabilityAway;
+        const drawOdds = drawProbability;
 
-      if (finalOddsHome >= 4)
-        finalOddsHome = Number((Math.random() * 3 + 1).toFixed(2));
-      if (finalOddsAway >= 4)
-        finalOddsAway = Number((Math.random() * 3 + 1).toFixed(2));
-      if (finalOddsDraw >= 5)
-        finalOddsDraw = Number((Math.random() * 4 + 1).toFixed(2));
+        const marginPercentage = 0.3;
 
-      match.homeTeamOdds = finalOddsHome;
-      match.awayTeamOdds = finalOddsAway;
-      match.drawOdds = finalOddsDraw;
-      await match.save();
-      console.info(
-        `Set odds for match ${match.id} as home: ${finalOddsHome}, and away: ${finalOddsAway}, draw`,
-        finalOddsDraw
-      );
+        const overround = homeOdds + awayOdds + drawOdds;
+
+        const margin = overround * marginPercentage;
+
+        const adjustedHomeProbability = (homeOdds / overround) * (1 + margin);
+        const adjustedAwayProbability = (awayOdds / overround) * (1 + margin);
+        const adjustedDrawProbability = (drawOdds / overround) * (1 + margin);
+
+        const adjustedHomeOdds = 1 / adjustedHomeProbability;
+        const adjustedAwayOdds = 1 / adjustedAwayProbability;
+        const adjustedDrawOdds = 1 / adjustedDrawProbability;
+
+        let finalOddsHome = Number(adjustedHomeOdds.toFixed(2));
+        let finalOddsAway = Number(adjustedAwayOdds.toFixed(2));
+        let finalOddsDraw = Number(adjustedDrawOdds.toFixed(2));
+
+        if (finalOddsHome >= 4)
+          finalOddsHome = Number((Math.random() * 3 + 1).toFixed(2));
+        if (finalOddsAway >= 4)
+          finalOddsAway = Number((Math.random() * 3 + 1).toFixed(2));
+        if (finalOddsDraw >= 5)
+          finalOddsDraw = Number((Math.random() * 4 + 1).toFixed(2));
+
+        match.homeTeamOdds = finalOddsHome;
+        match.awayTeamOdds = finalOddsAway;
+        match.drawOdds = finalOddsDraw;
+        await match.save();
+        console.info(
+          `Set odds for match ${match.id} as home: ${finalOddsHome}, and away: ${finalOddsAway}, draw`,
+          finalOddsDraw
+        );
+      }
+
+      return console.info(`Match odds for round ${currentRound} set`);
+    } catch (err) {
+      console.error(err);
     }
-
-    return console.info(`Match odds for round ${currentRound} set`);
   };
 
   static setTotalGoalsOdds = async () => {}; //will be set from probability distribution array
