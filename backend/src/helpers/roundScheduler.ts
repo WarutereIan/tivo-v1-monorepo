@@ -12,18 +12,6 @@ let liveRound: PlayRound,
   nextRound: number,
   currentSeasonNumber: number;
 
-/* try {
-  async () => {
-    const currentRoundDocument = await RoundCounter.findOne();
-    currentRoundDocument
-      ? (currentRound = currentRoundDocument.currentRound)
-      : console.log("Current round stats not fetched");
-    return currentRound;
-  };
-} catch (err) {
-  console.error(err);
-} */
-
 export const RoundPlayingNow = {
   startRound: async () => {
     try {

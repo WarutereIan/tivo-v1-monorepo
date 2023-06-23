@@ -96,12 +96,16 @@ function resetLeague() {
       lost: 0,
       goal_difference: 0,
       goals_conceded: 0,
+      goals_conceded_away: 1,
+      goals_conceded_home: 1,
       goals_scored: 0,
       points: 0,
       goals_scored_away: 1,
       goals_scored_home: 1,
-      attack_strength: 1,
-      defense_strength: 1,
+      home_attack_strength: 1,
+      home_defense_strength: 1,
+      away_attack_strength: 1,
+      away_defense_strength: 1,
     }).then(() => console.log("Teams created in db"));
   }
 
@@ -114,8 +118,10 @@ function resetLeague() {
     currentSeasonNumber: 0,
     total_goals_scored_away_last_season: 1,
     total_goals_scored_home_last_season: 1,
-    last_season_away_goals_average: 1,
-    last_season_home_goals_average: 1,
+    last_season_away_mean_conceded: 1,
+    last_season_home_mean_conceded: 1,
+    last_season_away_mean_scored: 1,
+    last_season_home_mean_scored: 1,
   }).then((res) => {
     console.log("Created inital season counter document \n", res);
   });

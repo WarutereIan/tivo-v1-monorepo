@@ -6,6 +6,10 @@ export type Results = {
   draw: boolean;
 };
 
+export interface ICorrectScoreProbability {
+  [score: string]: number;
+}
+
 export interface IMatch {
   homeTeam: string;
   awayTeam: string;
@@ -18,4 +22,5 @@ export interface IMatch {
   season: number;
   homeTeam_goal_distribution_by_probability: number[];
   awayTeam_goal_distribution_by_probability: number[];
+  correctScoreProbabilities: { [score: string]: number };
 }

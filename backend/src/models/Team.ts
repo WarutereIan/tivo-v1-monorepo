@@ -34,6 +34,14 @@ const TeamSchema = new Schema<ITeam>({
     type: Number,
     required: true,
   },
+  goals_conceded_away: {
+    type: Number,
+    required: true
+  },
+  goals_conceded_home: {
+    type: Number,
+    required: true
+  },
   goals_scored: {
     type: Number,
     required: true,
@@ -46,11 +54,19 @@ const TeamSchema = new Schema<ITeam>({
     type: Number,
     required: true,
   },
-  attack_strength: {
+  home_attack_strength: {
     type: Number,
     required: true,
   },
-  defense_strength: {
+  home_defense_strength: {
+    type: Number,
+    required: true,
+  },
+  away_attack_strength: {
+    type: Number,
+    required: true,
+  },
+  away_defense_strength: {
     type: Number,
     required: true,
   },

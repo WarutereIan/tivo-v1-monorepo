@@ -40,6 +40,9 @@ const MatchSchema = new Schema<IMatch>({
   drawOdds: {
     type: Number,
   },
+  correctScoreProbabilities: {
+    type: {},
+  },
 });
 
 export const Match = model<IMatch>("Match", MatchSchema);

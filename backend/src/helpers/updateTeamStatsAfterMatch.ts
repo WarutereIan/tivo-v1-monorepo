@@ -19,9 +19,14 @@ export const updateTeam = async (
       team.lost++;
     }
 
-    if (side === 'home') team.goals_scored_home += goalsScored
-    if(side === 'away') team.goals_scored_away += goalsScored
-
+    if (side === "home") {
+      team.goals_scored_home += goalsScored;
+      team.goals_conceded_home += goalsConceded;
+    }
+    if (side === "away") {
+      team.goals_scored_away += goalsScored; //here the defensive strength is adjusted to indicate probability of away team conceding a goal
+      team.goals_conceded_away += goalsConceded;
+    }
     team.goal_difference += goalDifference;
     team.goals_conceded += goalsConceded;
     team.goals_scored += goalsScored;
