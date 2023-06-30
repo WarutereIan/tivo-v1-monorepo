@@ -23,10 +23,10 @@ import { ISeason } from "../types/ISeason";
  * @Dev function below will be called at the end of every season
  */
 export async function calculateTeamStrengths() {
-  let leagueGoalsAverageScoredHome: any,
-    leagueGoalsAverageScoredAway: any,
-    leagueGoalsAverageConcedHome: any,
-    leagueGoalsAverageConcedAway: any;
+  let leagueGoalsAverageScoredHome: number,
+    leagueGoalsAverageScoredAway: number,
+    leagueGoalsAverageConcedHome: number,
+    leagueGoalsAverageConcedAway: number;
   try {
     let season = await SeasonCounter.findOne();
 
@@ -39,12 +39,12 @@ export async function calculateTeamStrengths() {
       throw new Error("Could not get season at calculateTeamOdds");
     }
 
-    for await (const team of Team.find()) {
-      const goalsScoredHome = team.goals_scored_home;
-      const goalsConcededHome = team.goals_conceded_home;
+    for await (let team of Team.find()) {
+      const goalsScoredHome = team.goals_scored_home_previous_season;
+      const goalsConcededHome = team.goals_conceded_home_previous_season;
 
-      const goalsScoredAway = team.goals_scored_away;
-      const goalsConcededAway = team.goals_conceded_away;
+      const goalsScoredAway = team.goals_scored_away_previous_season;
+      const goalsConcededAway = team.goals_conceded_away_previous_season;
 
       const homeAttackStrength =
         goalsScoredHome / (19 * leagueGoalsAverageScoredHome);
@@ -63,9 +63,10 @@ export async function calculateTeamStrengths() {
       team.home_defense_strength = homeDefenseStrength;
       team.away_defense_strength = awayDefenseStrength;
 
-      await team.save();
+      team = await team.save();
     }
     console.log("Updated team strengths");
+    return true;
   } catch (err) {
     console.log(err);
   }
@@ -160,7 +161,16 @@ class MatchGoalDistribution {
           }
         }
 
+        let scoreOdds: { [score: string]: number } = {};
+
+        this.calculateCorrectScoreOdds(correctScoreProbabilities, scoreOdds);
+
         match.correctScoreProbabilities = correctScoreProbabilities;
+
+        match.totalGoalsPredictions = this.calculateTotalGoalOdds(
+          expectedAwayGoals,
+          expectedHomeGoals
+        );
 
         await match.save();
       } else {
@@ -181,17 +191,17 @@ class MatchGoalDistribution {
     }
   }
 
-  calculateProbabilityDistribution(teamAverageGoals: number): number[] {
-    /**
-     * P(X: u) = (e^-u).(u^x)/x!
-     * take u as expected goals for either home or away
-     * x as the goals whose probability is to be calculated
-     */
+  /**
+   * P(X: u) = (e^-u).(u^x)/x!
+   * take u as expected goals for either home or away
+   * x as the goals whose probability is to be calculated
+   */
+  calculateProbabilityDistribution(teamExpectedGoals: number): number[] {
     let probabilityArray: number[] = [];
     for (let x = 0; x < 7; x++) {
       let P: number = Number(
         (
-          (Math.exp(-teamAverageGoals) * Math.pow(teamAverageGoals, x)) /
+          (Math.exp(-teamExpectedGoals) * Math.pow(teamExpectedGoals, x)) /
           this.factorial(x)
         ).toFixed(4)
       );
@@ -220,6 +230,51 @@ class MatchGoalDistribution {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  calculateCorrectScoreOdds(
+    correctScoreProbabilities: {
+      [score: string]: number;
+    },
+    scoreOdds: { [score: string]: number }
+  ) {
+    for (const key in correctScoreProbabilities) {
+      let probability = correctScoreProbabilities[key];
+      /* console.log("\n probability", probability); */
+      let adjustedGoalOdds = 1 / (probability * 1.3); //1.3 = margin
+
+      //console.log(" \n goal odds:", goalOdds);
+      scoreOdds[key] = adjustedGoalOdds;
+    }
+
+    return scoreOdds;
+  }
+
+  /**
+   * /**
+   * P(X: u) = (e^-u).(u^x)/x!
+   * take u as expected total goals for both home and away,
+   * x as the goals whose probability is to be calculated
+   *
+   *
+   * @param expectedAwayGoals
+   * @param expectedHomeGoals
+   *
+   */
+  calculateTotalGoalOdds(expectedAwayGoals: number, expectedHomeGoals: number) {
+    const totalExpectedGoals = expectedAwayGoals + expectedHomeGoals;
+    let totalGoalsPredictions: { [goals: string]: number } = {};
+    for (let i = 0; i < 7; i++) {
+      let P =
+        (Math.exp(-totalExpectedGoals) * Math.pow(totalExpectedGoals, i)) /
+        this.factorial(i);
+
+      let margin = P * 0.3;
+
+      let adjustedTotalGoalOdds = 1 / (P * (1 + margin)); //bookmaker margin = 0.3
+      totalGoalsPredictions[i] = adjustedTotalGoalOdds;
+    }
+    return totalGoalsPredictions;
   }
 }
 

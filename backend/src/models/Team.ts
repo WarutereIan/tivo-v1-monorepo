@@ -30,27 +30,35 @@ const TeamSchema = new Schema<ITeam>({
     type: Number,
     required: true,
   },
-  goals_conceded: {
+  goals_conceded_away_previous_season: {
     type: Number,
     required: true,
   },
-  goals_conceded_away: {
-    type: Number,
-    required: true
-  },
-  goals_conceded_home: {
-    type: Number,
-    required: true
-  },
-  goals_scored: {
+  goals_conceded_away_current_season: {
     type: Number,
     required: true,
   },
-  goals_scored_away: {
+  goals_conceded_home_current_season: {
     type: Number,
     required: true,
   },
-  goals_scored_home: {
+  goals_conceded_home_previous_season: {
+    type: Number,
+    required: true,
+  },
+  goals_scored_away_previous_season: {
+    type: Number,
+    required: true,
+  },
+  goals_scored_away_current_season: {
+    type: Number,
+    required: true,
+  },
+  goals_scored_home_current_season: {
+    type: Number,
+    required: true,
+  },
+  goals_scored_home_previous_season: {
     type: Number,
     required: true,
   },

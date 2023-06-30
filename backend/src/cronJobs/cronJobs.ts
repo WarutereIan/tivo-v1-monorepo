@@ -1,13 +1,15 @@
 import { CronJob } from "cron";
 import { RoundPlayingNow } from "../helpers/roundScheduler";
-import { Odds } from "../services/bookMaker";
 
-export const playLeagueCron = new CronJob("50 * * * * *", async () => {
+export const playLeagueCron = new CronJob("30 * * * * *", async () => {
   console.log("Hourly league cron job started");
   await RoundPlayingNow.startRound();
 });
 
-export const setRoundOddsCron = new CronJob("59 * * * * *", async () => {
+//job runs every 10th second of the minute
+/* export const setRoundOddsCron = new CronJob("05 0-59 * * * *", () => {
   console.log(`\n Setting next round odds: setRoundsCron job started`);
-  await Odds.setRoundOds();
-});
+  Odds.setRoundOdds().then();
+}); */
+
+//set one job with round starting only after odds are set
