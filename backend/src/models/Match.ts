@@ -40,7 +40,19 @@ const MatchSchema = new Schema<IMatch>({
   drawOdds: {
     type: Number,
   },
+  homeDoubleChanceOdds: {
+    type: Number,
+  },
+  awayDoubleChanceOdds: {
+    type: Number,
+  },
+  drawDoubleChanceOdds: {
+    type: Number,
+  },
   correctScoreProbabilities: {
+    type: {},
+  },
+  totalGoalsPredictions: {
     type: {},
   },
 });

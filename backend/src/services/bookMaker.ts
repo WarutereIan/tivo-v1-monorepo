@@ -8,6 +8,7 @@
  * But during match, match is setup with the stronger side being that favored by the minority; bet slip will have bet id for this summation, to track odds
  */
 
+import { RedisClient } from "../config/db";
 import { Match } from "../models/Match";
 import { RoundCounter } from "../models/RoundCounter";
 import { SeasonCounter } from "../models/SeasonCounter";
@@ -17,7 +18,7 @@ import { MatchGoalDistributionManager } from "./calculateGoalsOdds";
 let currentSeasonCounter: number;
 
 export class Odds {
-  static setRoundOds = async () => {
+  static setRoundOdds = async () => {
     try {
       //match odds set for current round in current season
       const currentSeason = await SeasonCounter.findOne({});
@@ -30,8 +31,10 @@ export class Odds {
         );
       }
 
-      const currentRoundDocument = await RoundCounter.findOne();
-      const currentRound = currentRoundDocument?.currentRound;
+      //const currentRoundDocument = await RoundCounter.findOne();
+      let nextRound = Number(await RedisClient.get("nextRound"));
+
+      if (nextRound >= 37) nextRound = 0;
 
       //get matches in current round from Matches.find({round: currentRound})
       //get team names from the matches
@@ -39,7 +42,7 @@ export class Odds {
       //determine odds from the two
       //save odds in db, cache odds so that they can be regularly accessed from server
       for await (const match of Match.find({
-        round: currentRound,
+        round: nextRound,
         season: currentSeasonCounter,
       }).select("homeTeam awayTeam homeTeamOdds awayTeamOdds")) {
         //home team stats
@@ -47,9 +50,9 @@ export class Odds {
 
         let awayTeam = await Team.findOne({ name: match.awayTeam });
 
-        await MatchGoalDistributionManager.calculateMatchGoalDistribution(
+        /* await MatchGoalDistributionManager.calculateMatchGoalDistribution(
           match.id
-        );
+        ); */
 
         let homeTeamPoints: number,
           awayTeamPoints: number,
@@ -89,6 +92,9 @@ export class Odds {
 
         const drawProbability = Math.random() * 0.2;
 
+        const homeDChanceProb = probabilityHome + drawProbability;
+        const awayDChanceProb = probabilityAway + drawProbability;
+
         const homeOdds = probabilityHome;
         const awayOdds = probabilityAway;
         const drawOdds = drawProbability;
@@ -96,6 +102,17 @@ export class Odds {
         const marginPercentage = 0.3;
 
         const overround = homeOdds + awayOdds + drawOdds;
+
+        const DChanceOverround =
+          homeDChanceProb + awayDChanceProb + drawProbability;
+        const DChanceMargin = DChanceOverround * marginPercentage;
+
+        const adjustedHomeDChanceProb =
+          ((1.5 * homeDChanceProb) / DChanceOverround) * (1 + DChanceMargin);
+        const adjustedAwayDChanceProb =
+          ((1.5 * awayDChanceProb) / DChanceOverround) * (1 + DChanceMargin);
+        const adjustedDrawDChanceProb =
+          ((2 * drawProbability) / DChanceOverround) * (1 + DChanceMargin);
 
         const margin = overround * marginPercentage;
 
@@ -106,6 +123,10 @@ export class Odds {
         const adjustedHomeOdds = 1 / adjustedHomeProbability;
         const adjustedAwayOdds = 1 / adjustedAwayProbability;
         const adjustedDrawOdds = 1 / adjustedDrawProbability;
+
+        const adjustedHomeDChanceOdds = 1 / adjustedHomeDChanceProb;
+        const adjustedAwayDchanceOdds = 1 / adjustedAwayDChanceProb;
+        const adjustedDrawDChanceOdds = 1 / adjustedDrawDChanceProb;
 
         let finalOddsHome = Number(adjustedHomeOdds.toFixed(2));
         let finalOddsAway = Number(adjustedAwayOdds.toFixed(2));
@@ -121,6 +142,11 @@ export class Odds {
         match.homeTeamOdds = finalOddsHome;
         match.awayTeamOdds = finalOddsAway;
         match.drawOdds = finalOddsDraw;
+        match.homeDoubleChanceOdds = Number(adjustedHomeDChanceOdds.toFixed(2));
+        match.awayDoubleChanceOdds = Number(adjustedAwayDchanceOdds.toFixed(2));
+        //match.drawDoubleChanceOdds = Number(adjustedDrawDChanceOdds.toFixed(2));
+
+        //add odds for double chance
         await match.save();
         console.info(
           `Set odds for match ${match.id} as home: ${finalOddsHome}, and away: ${finalOddsAway}, draw`,
@@ -128,7 +154,7 @@ export class Odds {
         );
       }
 
-      return console.info(`Match odds for round ${currentRound} set`);
+      return console.info(`Match odds for round ${nextRound} set`);
     } catch (err) {
       console.error(err);
     }

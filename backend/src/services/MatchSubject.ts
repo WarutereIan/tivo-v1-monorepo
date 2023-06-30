@@ -39,6 +39,49 @@ export class MatchSubject {
     this.matchPlay = new ScoreboardComponent(this.mainService);
   }
 
+  //guide on how the numbers influence outcomes in each of these aspects of match settings:
+  //the numbers represent the position of an element in the respective array of the specific setting
+  /**
+   * 
+   * relativeStrengths: string[] = [
+    `Hosts much weaker than Visitors`,
+    `Hosts weaker than Visitors`,
+    `Hosts a bit weaker than Visitors`,
+    `Hosts and Visitors equal in class`,
+    `Hosts a bit stronger than Visitors`,
+    `Hosts stronger than Visitors`,
+    `Hosts much stronger than Visitors`,
+  ];
+
+  homeCrowdSupports: string[] = [
+    `Hosts have no support`,
+    `Hosts have weak support`,
+    `Hosts have average support`,
+    `Hosts enjoy good support`,
+    `Hosts enjoy outstanding support`,
+    `Teams play on neutral venue`,
+    `Random support`,
+  ];
+
+  morale: string[] = [ (motivations == morale)
+    `Extremely low`,
+    `Low`,
+    `Average`,
+    `High`,
+    `Extremely high`,
+    `Random`,
+  ];
+
+  tactics: string[] = [
+    'Defensive',
+    'Counter',
+    'Balanced',
+    'Possession',
+    'Attacking',
+    'Random',
+  ];
+   */
+
   startMatch() {
     this.matchSettings.ChangeTournament("UEFA Champions League");
 
@@ -48,17 +91,17 @@ export class MatchSubject {
 
     this.mainService.updateMatchID(this.matchID);
 
-    this.matchSettings.ChangeRelativeStrength(4);
+    this.matchSettings.ChangeRelativeStrength(5);
 
-    this.matchSettings.ChangeHomeCrowdSupport(1);
+    this.matchSettings.ChangeHomeCrowdSupport(4);
 
-    this.matchSettings.ChangeHomeTeamMorale(2);
+    this.matchSettings.ChangeHomeTeamMorale(5);
 
-    this.matchSettings.ChangeAwayTeamMorale(1);
+    this.matchSettings.ChangeAwayTeamMorale(4);
 
-    this.matchSettings.ChangeHomeTeamTactics(4);
+    this.matchSettings.ChangeHomeTeamTactics(3);
 
-    this.matchSettings.ChangeAwayTeamTactics(1);
+    this.matchSettings.ChangeAwayTeamTactics(5);
 
     this.matchSettings.proceedToMatch();
 

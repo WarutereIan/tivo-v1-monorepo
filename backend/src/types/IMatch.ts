@@ -23,4 +23,8 @@ export interface IMatch {
   homeTeam_goal_distribution_by_probability: number[];
   awayTeam_goal_distribution_by_probability: number[];
   correctScoreProbabilities: { [score: string]: number };
+  totalGoalsPredictions: { [goals: string]: number };
+  homeDoubleChanceOdds: number;
+  awayDoubleChanceOdds: number;
+  drawDoubleChanceOdds: number;
 }

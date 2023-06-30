@@ -1,23 +1,23 @@
-import { RoundCounter } from "../models/RoundCounter";
+import { SeasonCounter } from "../models/SeasonCounter";
 import { seasonFixtures } from "../services/gameManager";
 import { RedisClient } from "./db";
 
 export const initCacheValues = async () => {
-  await seasonFixtures.storeFixturesInCache();
-  console.log("Football Match fixtures stored in cache \n");
+  try {
+    await seasonFixtures.storeFixturesInCache();
+    console.log("Football Match fixtures stored in cache \n");
 
-  await RedisClient.set("roundStartedBool", 0);
-  console.log("RoundStartedBool set to null \n");
+    await RedisClient.set("roundStartedBool", 0);
+    console.log("RoundStartedBool set to false \n");
 
-  /* let currentRoundDocument = await RoundCounter.findOne();
-  let currentRound: number;
-  if (currentRoundDocument) {
-    currentRound = currentRoundDocument.currentRound;
-  } else {
-    console.error(`\n Current round number not fetched from db! `);
-    process.exit();
+    let Season = await SeasonCounter.findOne();
+    let currentSeasonNumber = 0;
+    if (Season) {
+      currentSeasonNumber = Season.currentSeasonNumber;
+      await RedisClient.set("currentSeasonNumber", currentSeasonNumber);
+      console.log("set currentSeasonNumber in cache as", currentSeasonNumber);
+    } else throw new Error("Could not set cache values @initCacheValues");
+  } catch (err) {
+    console.error(err);
   }
-
-  await RedisClient.set("currentRound", currentRound);
-  console.log("\nCurrentRound Counter set in cache"); */
 };
