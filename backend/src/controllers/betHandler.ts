@@ -30,7 +30,7 @@ export class Football {
 
       const _betslip = await Betslip.create({ userID, games, total_odds });
 
-      const betslip = await Betslip.findById(_betslip.id).select('-')
+      const betslip = await Betslip.findById(_betslip.id);
 
       return res.status(200).json({ success: true, betslip });
     } catch (err) {
