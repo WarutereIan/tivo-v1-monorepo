@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import { RedisClient } from "../config/db";
 import { Betslip } from "../models/Betslip";
 
 export class Football {
@@ -27,6 +26,8 @@ export class Football {
     try {
       const userID = req.user?.id;
       const { games, total_odds, amount_staked } = req.body;
+
+      //will add guard to check whether game has been played before being bet on
 
       const _betslip = await Betslip.create({
         userID,

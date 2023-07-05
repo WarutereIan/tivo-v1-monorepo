@@ -62,7 +62,7 @@ httpServer.listen(config.PORT || 5000, () => {
 });
 
 //Start Cron jobs to play the leagues
-playLeagueCron.start();
+//playLeagueCron.start();
 
 //Start cron job to set odds after every round
 //setRoundOddsCron.start();

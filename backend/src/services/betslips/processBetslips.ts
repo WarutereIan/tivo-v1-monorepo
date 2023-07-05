@@ -24,7 +24,7 @@ export class processBetslips {
               const gameWinner = gameResults.results.winner;
 
               let matchFinal: gamePick;
-              match.predicted_winner == gameWinner
+              match.predicted_winner === gameWinner
                 ? (matchFinal = { ...match, won: true, processed: true })
                 : (matchFinal = { ...match, won: false, processed: true });
 
@@ -40,30 +40,24 @@ export class processBetslips {
 
         matchesProcessed.forEach((match: any) => {
           _slipProcessed = match.processed && _slipProcessed;
-          //console.log(_slipProcessed);
         });
 
         betslip.processing_completed = _slipProcessed;
 
         //if all matches have been checked get the individual match results and mark won on betlsip
         if (_slipProcessed) {
-          const _betsWon = matches.reduce(function (
-            accumulator: gamePick,
-            currentGame: gamePick
-          ) {
-            return {
-              ...currentGame,
-              won: accumulator.won && currentGame.won,
-            };
-          },
-          matches[0]);
+          let _slipWon = true;
 
-          const betsWon = _betsWon.won;
+          matchesProcessed.forEach((match) => {
+            _slipWon = match.won && _slipWon;
+          });
 
-          betslip.won = betsWon;
+          betslip.won = _slipWon;
 
           console.log("Betslip", betslip.id, "processing completed");
         }
+
+        betslip.__v++;
 
         /* console.log(
           "Betslip",
