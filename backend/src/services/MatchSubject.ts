@@ -142,17 +142,17 @@ export class MatchSubject {
          * hooks for adding to total games played, wins, losses,
          */
         if (this.homeTeamGoalsResult > this.awayTeamGoalsResult) {
-          this.matchWinner = this.homeTeam;
+          this.matchWinner = "1";
           this.matchDrawn = false;
           this.homeTeamPoints = 3;
           this.awayTeamPoints = 0;
         } else if (this.homeTeamGoalsResult < this.awayTeamGoalsResult) {
-          this.matchWinner = this.awayTeam;
+          this.matchWinner = "2";
           this.matchDrawn = false;
           this.homeTeamPoints = 0;
           this.awayTeamPoints = 3;
         } else {
-          this.matchWinner = "none";
+          this.matchWinner = "X";
           this.matchDrawn = true;
           this.homeTeamPoints = this.awayTeamPoints = 1;
         }

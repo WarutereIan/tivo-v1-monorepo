@@ -26,9 +26,14 @@ export class Football {
 
     try {
       const userID = req.user?.id;
-      const { games, total_odds } = req.body;
+      const { games, total_odds, amount_staked } = req.body;
 
-      const _betslip = await Betslip.create({ userID, games, total_odds });
+      const _betslip = await Betslip.create({
+        userID,
+        games,
+        total_odds,
+        amount_staked,
+      });
 
       const betslip = await Betslip.findById(_betslip.id);
 
