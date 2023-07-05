@@ -5,12 +5,6 @@ import { RedisClient } from "./db";
 
 export const initCacheValues = async () => {
   try {
-    await seasonFixtures.storeFixturesInCache();
-    console.log("Football Match fixtures stored in cache \n");
-
-    await RedisClient.set("roundStartedBool", 0);
-    console.log("RoundStartedBool set to false \n");
-
     let Season = await SeasonCounter.findOne();
     let currentSeasonNumber = 0;
     if (Season) {
@@ -25,6 +19,12 @@ export const initCacheValues = async () => {
       await RedisClient.set("currentRound", currentRound);
       console.log("set currentRound number as ", currentRound);
     } else throw new Error("Could not set currentRound value @initCacheValues");
+
+    await seasonFixtures.storeFixturesInCache();
+    console.log("Football Match fixtures stored in cache \n");
+
+    await RedisClient.set("roundStartedBool", 0);
+    console.log("RoundStartedBool set to false \n");
   } catch (err) {
     console.error(err);
     process.exit();

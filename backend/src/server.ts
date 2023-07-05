@@ -7,7 +7,7 @@ import { cpus } from "os";
 import cluster from "cluster";
 import { config } from "./config/config";
 import { initCacheValues } from "./config/initCacheValues";
-import { playLeagueCron } from "./cronJobs/cronJobs";
+import { checkSlipsCron, playLeagueCron } from "./cronJobs/cronJobs";
 
 let db: any;
 (async () => {
@@ -66,3 +66,6 @@ playLeagueCron.start();
 
 //Start cron job to set odds after every round
 //setRoundOddsCron.start();
+
+//start cron job to process betslips
+checkSlipsCron.start();

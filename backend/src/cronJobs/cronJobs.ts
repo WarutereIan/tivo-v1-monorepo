@@ -1,9 +1,23 @@
 import { CronJob } from "cron";
 import { RoundPlayingNow } from "../helpers/roundScheduler";
+import { processBetslips } from "../services/betslips/processBetslips";
 
 export const playLeagueCron = new CronJob("30 * * * * *", async () => {
-  console.log("Hourly league cron job started");
-  await RoundPlayingNow.startRound();
+  try {
+    console.log("Hourly league cron job started");
+    await RoundPlayingNow.startRound();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+export const checkSlipsCron = new CronJob("20 * * * * *", async () => {
+  try {
+    console.log("Running checkSlipsCron job");
+    await processBetslips.processBetslips();
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 //job runs every 10th second of the minute

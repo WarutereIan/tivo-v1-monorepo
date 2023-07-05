@@ -10,7 +10,7 @@ const BetslipSchema = new Schema<IBetslip>({
     type: [
       {
         match_id: String,
-        winner: String,
+        predicted_winner: String,
         odds: Number,
         processed: {
           type: Boolean,
@@ -36,6 +36,15 @@ const BetslipSchema = new Schema<IBetslip>({
   won: {
     type: Boolean,
     default: false,
+  },
+  amount_staked: {
+    type: Number,
+    required: true,
+  },
+  potential_winnings: {
+    //to be computed as odds*amount staked, in a mongoose prehook
+    type: Number,
+    default: 0,
   },
 });
 

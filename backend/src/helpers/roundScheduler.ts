@@ -1,6 +1,6 @@
 import { Request, Response, request, response } from "express";
 import { RoundCounter } from "../models/RoundCounter";
-import { PlayRound } from "../services/gameManager";
+import { PlayRound, seasonFixtures } from "../services/gameManager";
 import { RedisClient } from "../config/db";
 import { Match } from "../models/Match";
 import { createNewSeason, resetTeamScores } from "../services/resetSeason";
@@ -54,6 +54,7 @@ export const RoundPlayingNow = {
           { currentRound: 1 + currentRound }
         );
 
+        await seasonFixtures.storeFixturesInCache(); //update fixtures stored in cache
         //set match odds
         return await Odds.setRoundOdds();
       } else {
