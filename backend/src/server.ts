@@ -7,7 +7,11 @@ import { cpus } from "os";
 import cluster from "cluster";
 import { config } from "./config/config";
 import { initCacheValues } from "./config/initCacheValues";
-import { checkSlipsCron, playLeagueCron } from "./cronJobs/cronJobs";
+import {
+  checkSlipsCron,
+  payUserWalletsCron,
+  playLeagueCron,
+} from "./cronJobs/cronJobs";
 
 let db: any;
 (async () => {
@@ -69,3 +73,6 @@ playLeagueCron.start();
 
 //start cron job to process betslips
 checkSlipsCron.start();
+
+//start cron job to pay betslips after winning confirmed
+payUserWalletsCron.start();
