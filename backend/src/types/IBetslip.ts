@@ -14,4 +14,5 @@ export interface IBetslip {
   won: boolean;
   amount_staked: number;
   potential_winnings: number;
+  paid_out: boolean;
 }

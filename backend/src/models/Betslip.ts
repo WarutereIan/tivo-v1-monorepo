@@ -46,6 +46,10 @@ const BetslipSchema = new Schema<IBetslip>({
     type: Number,
     default: 0,
   },
+  paid_out: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export const Betslip = model<IBetslip>("Betslip", BetslipSchema);

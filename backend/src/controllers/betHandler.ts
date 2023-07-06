@@ -25,7 +25,7 @@ export class Football {
 
     try {
       const userID = req.user?.id;
-      const { games, total_odds, amount_staked } = req.body;
+      const { games, total_odds, amount_staked, potential_winnings } = req.body;
 
       //will add guard to check whether game has been played before being bet on
 
@@ -34,6 +34,7 @@ export class Football {
         games,
         total_odds,
         amount_staked,
+        potential_winnings,
       });
 
       const betslip = await Betslip.findById(_betslip.id);
