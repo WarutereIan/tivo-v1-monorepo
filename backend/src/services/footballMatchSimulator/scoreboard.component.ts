@@ -597,7 +597,7 @@ export class ScoreboardComponent {
       ) {
         this.matchSeconds = this.matchSeconds + 1;
         // when new minute starts
-        if (this.matchSeconds > 500) {
+        if (this.matchSeconds > 60) {
           //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
           this._mainService.updateMatchMinutes(this.matchMinutes);
@@ -1058,7 +1058,7 @@ export class ScoreboardComponent {
           }
         }
       }
-    }, 1);
+    }, 300);
 
     //this._mainService.updateMatchHasStarted(false)
   }
