@@ -9,6 +9,7 @@ import { Team } from "../models/Team";
 import { Match } from "../models/Match";
 import { MatchGoalDistributionManager } from "./calculateGoalsOdds";
 import { RedisClient } from "../config/db";
+import { Redis } from "ioredis";
 
 let nextSeason: number;
 
@@ -89,6 +90,7 @@ export const createNewSeason = async () => {
 
       nextSeason = season.currentSeasonNumber;
       await RedisClient.set("currentSeasonNumber", nextSeason); //update season number in cache
+      //await RedisClient.set("nextRound", 0);
       await season.save();
     } else {
       return console.error("\n Current season number could not be fetched!!");

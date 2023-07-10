@@ -12,4 +12,6 @@ router.get("/getWalletBalance", validateToken, Wallets.getBalance);
 
 router.get("/getBetslips", validateToken, Betslips.getUserBetslips);
 
+router.post("/importBetslip", validateToken, Betslips.importBetslip);
+
 module.exports = router;

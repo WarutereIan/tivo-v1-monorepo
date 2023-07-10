@@ -600,7 +600,7 @@ export class ScoreboardComponent {
         if (this.matchSeconds > 500) {
           //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
-
+          this._mainService.updateMatchMinutes(this.matchMinutes);
           this.matchSeconds = 0;
 
           //// 1) ADJUST POSSESSION according to teams' relative strength
