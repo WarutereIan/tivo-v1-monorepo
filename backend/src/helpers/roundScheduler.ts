@@ -7,6 +7,7 @@ import { createNewSeason, resetTeamScores } from "../services/resetSeason";
 import { SeasonCounter } from "../models/SeasonCounter";
 import { calculateTeamStrengths } from "../services/calculateGoalsOdds";
 import { Odds } from "../services/bookMaker";
+import { playLeagueCron } from "../cronJobs/cronJobs";
 
 let liveRound: PlayRound, currentSeasonNumber: number;
 
@@ -36,11 +37,6 @@ export const RoundPlayingNow = {
           }); //also creates league averages from last season's data, to be used in calculating team strengths in next step
         }
 
-        //calculate teams' strengths from last season
-        /* if (currentRound === 0) {
-          await calculateTeamStrengths();
-          //score counters are reset after this is done
-        } */
         await RedisClient.set("roundStartedBool", "true");
         await RedisClient.set("currentRound", currentRound);
         if (currentRound >= 37) await RedisClient.set("nextRound", 0);
@@ -68,10 +64,12 @@ export const RoundPlayingNow = {
     try {
       const roundStartedBool = await RedisClient.get("roundStartedBool");
 
+      const nextDate = playLeagueCron.nextDate();
+
       if (roundStartedBool !== "true") {
         return res.status(200).json({
           success: false,
-          roundStatus: "Round not started",
+          roundStatus: `Round not started. Next Round starts at: ${nextDate.toISOTime()}`,
         });
       }
 

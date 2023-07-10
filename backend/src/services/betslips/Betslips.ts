@@ -103,4 +103,69 @@ export class Betslips {
       });
     }
   };
+
+  static importBetslip = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      console.log(errors);
+      let _errors = errors.array().map((error) => {
+        return {
+          msg: error.msg,
+          field: error.param,
+          success: false,
+        };
+      })[0];
+      return res.status(400).json(_errors);
+    }
+
+    try {
+      let user = req.user?.id;
+
+      let { betslipID } = req.body;
+
+      const betslip = await Betslip.findById(betslipID).select("games");
+
+      /* if (betslip) {
+        betslip.games.forEach(async (game) => {
+          let match = await Match.findById(game.match_id).select(
+            "homeTeam awayTeam"
+          );
+
+          let gameObj = {
+            match_id: game.match_id,
+            homeTeam: match?.homeTeam,
+            awayTeam: match?.awayTeam,
+            predicted_winner: game.predicted_winner,
+          };
+        }); */
+
+      if (betslip) {
+        let Games = betslip.games;
+        let predictions = [];
+
+        for (const game of Games) {
+          let match = await Match.findById(game.match_id).select(
+            "homeTeam awayTeam"
+          );
+
+          let gameObj = {
+            match_id: game.match_id,
+            homeTeam: match?.homeTeam,
+            awayTeam: match?.awayTeam,
+            predicted_winner: game.predicted_winner,
+          };
+
+          predictions.push(gameObj);
+        }
+        return res.status(200).json({ success: true, predictions });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        msg: " Internal server error. Could not fetch betslips",
+      });
+    }
+  };
 }

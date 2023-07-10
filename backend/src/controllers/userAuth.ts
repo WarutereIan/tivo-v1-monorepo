@@ -75,6 +75,11 @@ export const signUp = async (req: Request, res: Response) => {
       currentBalance: 0,
     });
 
+    let _user = {
+      username: user.username,
+      walletBalance: wallet.currentBalance,
+    };
+
     const payload = {
       user: {
         id: user._id,
@@ -88,7 +93,7 @@ export const signUp = async (req: Request, res: Response) => {
       },
       (err, token) => {
         if (err) throw err;
-        res.status(200).json({ token, success: true });
+        res.status(200).json({ token, success: true, _user });
       }
     );
   } catch (err: any) {
@@ -126,7 +131,7 @@ export const login = async (req: Request, res: Response) => {
         });
       }
       user = await User.findOne({ phone_number }).select(
-        "password phone_number"
+        "password phone_number username"
       );
     } else {
       if (!(await User.exists({ email }))) {
@@ -137,7 +142,9 @@ export const login = async (req: Request, res: Response) => {
         });
       }
 
-      user = await User.findOne({ email }).select("password phone_number");
+      user = await User.findOne({ email }).select(
+        "password phone_number username"
+      );
     }
 
     if (!user || !(await Password.compare(user.password, password))) {
@@ -145,6 +152,15 @@ export const login = async (req: Request, res: Response) => {
         .status(400)
         .json({ msg: "Invalid credentials", success: false });
     }
+
+    let wallet = await Wallet.findOne({ ownerID: user.id });
+
+    let _user = {
+      username: user.username,
+      walletBalance: wallet?.currentBalance,
+    };
+
+    console.log(_user);
 
     // login user
     const payload = {
@@ -160,7 +176,11 @@ export const login = async (req: Request, res: Response) => {
       (err, token) => {
         if (err) throw err;
 
-        res.json({ token, success: true });
+        res.json({
+          token,
+          success: true,
+          _user,
+        });
       }
     );
   } catch (err: any) {

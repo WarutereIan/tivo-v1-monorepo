@@ -28,6 +28,8 @@ export class Football {
       const { games, total_odds, amount_staked, potential_winnings } = req.body;
 
       //will add guard to check whether game has been played before being bet on
+      //add fubctionality to subtract from user wallet
+      //add functionality to calculate odds from match db
 
       const _betslip = await Betslip.create({
         userID,

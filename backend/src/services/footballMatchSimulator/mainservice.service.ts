@@ -16,6 +16,11 @@ export class MainserviceService {
     return this.fs.readFileSync('./uefa_nations.json');
   }*/
 
+  matchMinutes = new Subject<number>();
+  updateMatchMinutes(data: any) {
+    this.matchMinutes.next(data);
+  }
+
   matchID = new Subject<string>();
   updateMatchID(data: any) {
     this.matchID.next(data);
