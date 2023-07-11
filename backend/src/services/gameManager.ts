@@ -52,10 +52,10 @@ export class PlayRound {
 
           this.matchArrays.push(matchSubject);
         });
-        this.combinedStats = zip(this.matchStats);
+        this.combinedStats = combineLatest(this.matchStats);
 
         this.sourceSubject = interval(2000).pipe(
-          take(110),
+          take(105),
           withLatestFrom(this.combinedStats),
           map(([counter, stats]) => {
             return stats;
@@ -69,6 +69,7 @@ export class PlayRound {
     );
   }
 
+  //change streaming to sockets
   async getLiveRoundStats(req: Request, res: Response) {
     const errors = validationResult(req);
 

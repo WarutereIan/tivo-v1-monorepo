@@ -68,7 +68,7 @@ export class StatsComponent {
     ]);
 
     this.matchStatus = combineLatest([
-      this._mainService.matchStatus.pipe(startWith(`0`)),
+      this._mainService.matchStatus.pipe(startWith(`Started`)),
     ]);
 
     this._mainService.matchID.subscribe((data) => {
