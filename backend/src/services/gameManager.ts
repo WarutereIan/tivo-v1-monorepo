@@ -1,7 +1,15 @@
 import { Request, Response } from "express";
 import { Match } from "../models/Match";
 import { MatchSubject } from "./MatchSubject";
-import { combineLatest } from "rxjs";
+import {
+  combineLatest,
+  forkJoin,
+  interval,
+  map,
+  take,
+  withLatestFrom,
+  zip,
+} from "rxjs";
 import { RedisClient } from "../config/db";
 import { validationResult } from "express-validator";
 import { Team } from "../models/Team";
@@ -25,6 +33,7 @@ export class PlayRound {
   matchArrays: any = [];
   matchStats: any = [];
   combinedStats!: any;
+  sourceSubject!: any;
 
   constructor(roundNumber: number, currentSeasonNumber: number) {
     /**
@@ -42,9 +51,17 @@ export class PlayRound {
           this.matchStats.push(matchSubject.MatchStats);
 
           this.matchArrays.push(matchSubject);
-
-          this.combinedStats = combineLatest(this.matchStats);
         });
+        this.combinedStats = zip(this.matchStats);
+
+        this.sourceSubject = interval(2000).pipe(
+          take(110),
+          withLatestFrom(this.combinedStats),
+          map(([counter, stats]) => {
+            return stats;
+          })
+        );
+
         this.matchArrays.forEach((match: MatchSubject) => {
           match.startMatch();
         });
@@ -74,7 +91,7 @@ export class PlayRound {
       };
 
       res.writeHead(200, headers);
-      this.combinedStats.subscribe((data: any) => {
+      this.sourceSubject.subscribe((data: any) => {
         res.write(`data: ${data}\n\n`);
         //console.log(data);
       });
