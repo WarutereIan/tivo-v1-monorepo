@@ -69,7 +69,8 @@ export const RoundPlayingNow = {
       if (roundStartedBool !== "true") {
         return res.status(200).json({
           success: false,
-          roundStatus: `Round not started. Next Round starts at: ${nextDate.toISOTime()}`,
+          roundStatus: `Not started`,
+          nextStartsAt: nextDate.toISOTime(),
         });
       }
 
