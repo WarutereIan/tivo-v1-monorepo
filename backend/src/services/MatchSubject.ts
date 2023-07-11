@@ -8,6 +8,7 @@ import { Match } from "../models/Match";
 import { Results } from "../types/IMatch";
 import { Team } from "../models/Team";
 import { updateTeam } from "../helpers/updateTeamStatsAfterMatch";
+import { RedisClient } from "../config/db";
 
 export class MatchSubject {
   mainService!: MainserviceService;
@@ -114,9 +115,9 @@ export class MatchSubject {
     });
 
     this.matchStats.matchStatus.subscribe(async (res: any) => {
-      if (res == "Full time") {
+      if (res[0] === "Full time") {
         console.log("match ended", this.matchID);
-        this.MatchStats.next("Game Ended");
+        this.MatchStats.next(res[0]);
 
         console.log(
           "home team goals",
@@ -192,6 +193,8 @@ export class MatchSubject {
           this.awayTeamGoalsResult,
           this.homeTeamGoalsResult
         );
+
+        await RedisClient.set("roundStartedBool", "false");
       }
     });
   }

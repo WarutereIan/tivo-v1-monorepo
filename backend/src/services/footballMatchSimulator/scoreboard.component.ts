@@ -598,7 +598,7 @@ export class ScoreboardComponent {
         this.matchSeconds = this.matchSeconds + 1;
         // when new minute starts
         //line below means minute is after every number of ms dictated in if condition below
-        if (this.matchSeconds > 2000) {
+        if (this.matchSeconds > 1900) {
           //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
           this._mainService.updateMatchMinutes(this.matchMinutes);
@@ -619,7 +619,7 @@ export class ScoreboardComponent {
           this._mainService.updateAwayTeamShotsOnGoal(this.awayTeamShotsOnGoal);
           this._mainService.updateAwayTeamGoals(this.awayTeamGoals);
 
-          this._mainService.updateMatchStatus(this.matchStatus);
+          //this._mainService.updateMatchStatus(this.matchStatus);
 
           this.matchSeconds = 0;
 
@@ -962,16 +962,16 @@ export class ScoreboardComponent {
             setTimeout(() => {
               this.matchStatus = this.matchStatuses[2];
               this.matchMinutes = 45;
-            }, 5000);
+            }, 2000);
           }
           // if full time is approaching
-          if (this.matchMinutes == 89) {
+          /* if (this.matchMinutes == 89) {
             // I need to set criteria to determine minutes added to first half
             this.timeAddedToH2 = Math.round(Math.random() * 5);
-          }
+          } */
           // when normal match time ends
           if (
-            this.matchMinutes > 90 + this.timeAddedToH2 &&
+            this.matchMinutes >= 90 &&
             this.matchStatus == this.matchStatuses[2]
           ) {
             // If this was 2nd leg, check aggregate result
