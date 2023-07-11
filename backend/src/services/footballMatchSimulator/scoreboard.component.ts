@@ -597,10 +597,30 @@ export class ScoreboardComponent {
       ) {
         this.matchSeconds = this.matchSeconds + 1;
         // when new minute starts
-        if (this.matchSeconds > 60) {
+        //line below means minute is after every number of ms dictated in if condition below
+        if (this.matchSeconds > 2000) {
           //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
           this._mainService.updateMatchMinutes(this.matchMinutes);
+          // send this minute's updated stats to service
+          this._mainService.updateHomeTeamPossession(this.homeTeamPossession);
+          this._mainService.updateAwayTeamPossession(this.awayTeamPossession);
+          this._mainService.updateHomeTeamYellowCards(this.homeTeamYellowCards);
+          this._mainService.updateHomeTeamRedCards(this.homeTeamRedCards);
+
+          this._mainService.updateAwayTeamFouls(this.awayTeamFouls);
+          this._mainService.updateAwayTeamRedCards(this.awayTeamRedCards);
+          this._mainService.updateAwayTeamYellowCards(this.awayTeamYellowCards);
+
+          this._mainService.updateHomeTeamActualShots(this.homeTeamActualShots);
+          this._mainService.updateHomeTeamShotsOnGoal(this.homeTeamShotsOnGoal);
+          this._mainService.updateHomeTeamGoals(this.homeTeamGoals);
+          this._mainService.updateAwayTeamActualShots(this.awayTeamActualShots);
+          this._mainService.updateAwayTeamShotsOnGoal(this.awayTeamShotsOnGoal);
+          this._mainService.updateAwayTeamGoals(this.awayTeamGoals);
+
+          this._mainService.updateMatchStatus(this.matchStatus);
+
           this.matchSeconds = 0;
 
           //// 1) ADJUST POSSESSION according to teams' relative strength
@@ -668,9 +688,6 @@ export class ScoreboardComponent {
             this.homeTeamPossession = 15;
             this.awayTeamPossession = 85;
           }
-          // send this minute's updated possession to service
-          this._mainService.updateHomeTeamPossession(this.homeTeamPossession);
-          this._mainService.updateAwayTeamPossession(this.awayTeamPossession);
 
           ///////////////////////
           //// 2) FOULS AND CARDS
@@ -679,7 +696,7 @@ export class ScoreboardComponent {
           // did hometeam commit a foul?
           if (Math.random() < this.homeTeamPotentialFouls / 90) {
             this.homeTeamFouls++;
-            this._mainService.updateHomeTeamFouls(this.homeTeamFouls);
+
             // did the home team get a yellow card?
             if (Math.random() < 1 / 7) {
               // choose random player from home team squad
@@ -695,13 +712,11 @@ export class ScoreboardComponent {
                 homePlayerCautioned.yellowCards.yellowCardsNumber++;
                 homePlayerCautioned.yellowCards.yellowCard2Time =
                   this.matchMinutes + 1;
-                this._mainService.updateHomeTeamYellowCards(
-                  this.homeTeamYellowCards
-                );
+
                 homePlayerCautioned.redCards++;
                 this.homeTeamRedCards++;
                 homePlayerCautioned.redCardTime = this.matchMinutes + 1;
-                this._mainService.updateHomeTeamRedCards(this.homeTeamRedCards);
+
                 this.homeTeamRedObjects.push({
                   name: homePlayerCautioned.name,
                   redCardTime: homePlayerCautioned.redCardTime,
@@ -726,9 +741,6 @@ export class ScoreboardComponent {
                 homePlayerCautioned.yellowCards.yellowCard1Time =
                   this.matchMinutes + 1;
                 this.homeTeamYellowCards++;
-                this._mainService.updateHomeTeamYellowCards(
-                  this.homeTeamYellowCards
-                );
               }
             } else {
               // did the home team receive straight red?
@@ -744,7 +756,7 @@ export class ScoreboardComponent {
                 homePlayerStraightRed.redCards++;
                 homePlayerStraightRed.redCardTime = this.matchMinutes + 1;
                 this.homeTeamRedCards++;
-                this._mainService.updateHomeTeamRedCards(this.homeTeamRedCards);
+
                 this.homeTeamRedObjects.push({
                   name: homePlayerStraightRed.name,
                   redCardTime: homePlayerStraightRed.redCardTime,
@@ -769,7 +781,7 @@ export class ScoreboardComponent {
           // did away team commit a foul?
           if (Math.random() < this.awayTeamPotentialFouls / 90) {
             this.awayTeamFouls++;
-            this._mainService.updateAwayTeamFouls(this.awayTeamFouls);
+
             // did the away team get a yellow card?
             if (Math.random() < 1 / 7) {
               // choose random player from home team squad
@@ -785,13 +797,11 @@ export class ScoreboardComponent {
                 awayPlayerCautioned.yellowCards.yellowCardsNumber++;
                 awayPlayerCautioned.yellowCards.yellowCard2Time =
                   this.matchMinutes + 1;
-                this._mainService.updateAwayTeamYellowCards(
-                  this.homeTeamYellowCards
-                );
+
                 awayPlayerCautioned.redCards++;
                 this.awayTeamRedCards++;
                 awayPlayerCautioned.redCardTime = this.matchMinutes + 1;
-                this._mainService.updateAwayTeamRedCards(this.awayTeamRedCards);
+
                 this.awayTeamRedObjects.push({
                   name: awayPlayerCautioned.name,
                   redCardTime: awayPlayerCautioned.redCardTime,
@@ -816,9 +826,6 @@ export class ScoreboardComponent {
                 awayPlayerCautioned.yellowCards.yellowCard1Time =
                   this.matchMinutes + 1;
                 this.awayTeamYellowCards++;
-                this._mainService.updateAwayTeamYellowCards(
-                  this.awayTeamYellowCards
-                );
               }
             } else {
               // did the home team receive straight red?
@@ -834,7 +841,7 @@ export class ScoreboardComponent {
                 awayPlayerStraightRed.redCards++;
                 this.awayTeamRedCards++;
                 awayPlayerStraightRed.redCardTime = this.matchMinutes + 1;
-                this._mainService.updateAwayTeamRedCards(this.awayTeamRedCards);
+
                 this.awayTeamRedObjects.push({
                   name: awayPlayerStraightRed.name,
                   redCardTime: awayPlayerStraightRed.redCardTime,
@@ -864,15 +871,11 @@ export class ScoreboardComponent {
           // did the home team shoot?
           if (Math.random() < this.homeTeamPotentialShots / 90) {
             this.homeTeamActualShots++;
-            this._mainService.updateHomeTeamActualShots(
-              this.homeTeamActualShots
-            );
+
             // was this shot on target by the home team?
             if (Math.random() < this.SHOT_IS_ON_GOAL_H) {
               this.homeTeamShotsOnGoal++;
-              this._mainService.updateHomeTeamShotsOnGoal(
-                this.homeTeamShotsOnGoal
-              );
+
               this.homeTeamMorale = this.homeTeamMorale + 0.2;
               // was this a goal?
               let homeGoalChance =
@@ -884,7 +887,7 @@ export class ScoreboardComponent {
               if (Math.random() < homeGoalChance) {
                 // this is a goal
                 this.homeTeamGoals++;
-                this._mainService.updateHomeTeamGoals(this.homeTeamGoals);
+
                 this.totalHomeTeamGoals =
                   this.homeTeam1stLegGoals + this.homeTeamGoals;
                 // find who scored goal
@@ -907,15 +910,11 @@ export class ScoreboardComponent {
             // did the away team shoot?
             if (Math.random() < this.awayTeamPotentialShots / 90) {
               this.awayTeamActualShots++;
-              this._mainService.updateAwayTeamActualShots(
-                this.awayTeamActualShots
-              );
+
               // was this shot on target by the away team?
               if (Math.random() < this.SHOT_IS_ON_GOAL_A) {
                 this.awayTeamShotsOnGoal++;
-                this._mainService.updateAwayTeamShotsOnGoal(
-                  this.awayTeamShotsOnGoal
-                );
+
                 this.awayTeamMorale = this.awayTeamMorale + 0.2;
                 // was this a goal?
                 let awayGoalChance =
@@ -925,7 +924,7 @@ export class ScoreboardComponent {
                 if (Math.random() < awayGoalChance) {
                   // this is a goal
                   this.awayTeamGoals++;
-                  this._mainService.updateAwayTeamGoals(this.awayTeamGoals);
+
                   this.totalAwayTeamGoals =
                     this.awayTeam1stLegGoals + this.awayTeamGoals;
                   // find who scored goal
@@ -1058,7 +1057,7 @@ export class ScoreboardComponent {
           }
         }
       }
-    }, 300);
+    }, 1);
 
     //this._mainService.updateMatchHasStarted(false)
   }
