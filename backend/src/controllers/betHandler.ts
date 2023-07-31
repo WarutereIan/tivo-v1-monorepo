@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { Betslip } from "../models/Betslip";
+import { Match } from "../models/Match";
+import { Wallet } from "../models/Wallet";
 
 export class Football {
   /**
@@ -27,8 +29,32 @@ export class Football {
       const userID = req.user?.id;
       const { games, total_odds, amount_staked, potential_winnings } = req.body;
 
-      //will add guard to check whether game has been played before being bet on
-      //add fubctionality to subtract from user wallet
+      //check match validity
+      games.forEach(async (game: any) => {
+        let match = await Match.findOne({ _id: game.match_id }).select(
+          "status"
+        );
+        console.log(match);
+        if (match?.status != "NOT STARTED" || !match.status) {
+          return res.status(200).json({
+            success: false,
+            msg: `match ${game.match_id} invalid with match status: ${match?.status}`,
+          });
+        }
+      });
+
+      //will add guard to check whether game has been played before being bet on ----- DONE
+      //add fubctionality to subtract from user wallet ---- DONE
+      let wallet = await Wallet.findOne({ ownerID: userID });
+      if (wallet) {
+        wallet.currentBalance -= amount_staked;
+        await wallet.save();
+      } else {
+        return res.status(500).json({
+          success: false,
+          msg: "Could not update wallet. Try again shortly",
+        });
+      }
       //add functionality to calculate odds from match db
 
       const _betslip = await Betslip.create({
