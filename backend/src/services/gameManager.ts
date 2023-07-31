@@ -45,6 +45,7 @@ export class PlayRound {
           let homeTeam = roundMatch.homeTeam;
           let awayTeam = roundMatch.awayTeam;
           let matchID = roundMatch.id;
+          
 
           let matchSubject = new MatchSubject(matchID, homeTeam, awayTeam);
 
@@ -69,7 +70,7 @@ export class PlayRound {
     );
   }
 
-  //change streaming to sockets
+  //change streaming to sockets?
   async getLiveRoundStats(req: Request, res: Response) {
     const errors = validationResult(req);
 

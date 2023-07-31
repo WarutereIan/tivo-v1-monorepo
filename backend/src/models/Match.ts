@@ -55,6 +55,10 @@ const MatchSchema = new Schema<IMatch>({
   totalGoalsPredictions: {
     type: {},
   },
+  status: {
+    type: String,
+    default: "NOT STARTED",
+  },
 });
 
 export const Match = model<IMatch>("Match", MatchSchema);

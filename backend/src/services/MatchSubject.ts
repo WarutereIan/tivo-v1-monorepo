@@ -106,6 +106,8 @@ export class MatchSubject {
 
     this.matchSettings.proceedToMatch();
 
+    Match.findOneAndUpdate({ _id: this.matchID }, { status: "STARTED" }).then();
+
     this.matchPlay.startMatch();
 
     this.matchStats.stats.subscribe((res: any) => {
@@ -172,6 +174,7 @@ export class MatchSubject {
           { _id: this.matchID },
           {
             results: this.matchResults,
+            status: "FINISHED",
           }
         );
 
