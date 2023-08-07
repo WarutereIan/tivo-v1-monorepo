@@ -8,11 +8,13 @@ import { SeasonCounter } from "../models/SeasonCounter";
 import { calculateTeamStrengths } from "../services/calculateGoalsOdds";
 import { Odds } from "../services/bookMaker";
 import { playLeagueCron } from "../cronJobs/cronJobs";
+import { clients } from "../constants/sseClients";
+import { IClient } from "../types/ISSEClient";
 
 let liveRound: PlayRound, currentSeasonNumber: number;
 
 export const RoundPlayingNow = {
-  startRound: async () => {
+  startRound: async (req: Request, res: Response) => {
     try {
       const currentSeasonNumber = Number(
         await RedisClient.get("currentSeasonNumber")
@@ -52,6 +54,7 @@ export const RoundPlayingNow = {
 
         await seasonFixtures.storeFixturesInCache(); //update fixtures stored in cache
         //set match odds
+        broadcastStream(req, res, clients);
         return await Odds.setRoundOdds();
       } else {
         return console.error("\n Current round number not fetched! \n");
@@ -66,17 +69,65 @@ export const RoundPlayingNow = {
 
       const nextDate = playLeagueCron.nextDate();
 
+      const headers = {
+        "Content-Type": "text/event-stream",
+        Connection: "keep-alive",
+        "Cache-Control": "no-cache",
+        "X-Accel-Buffering": "no",
+      };
+
+      res.writeHead(200, headers);
+
       if (roundStartedBool !== "true") {
-        return res.status(200).json({
+        const data = JSON.stringify({
           success: false,
           roundStatus: `Not started`,
           nextStartsAt: nextDate.toISOTime(),
         });
-      }
 
-      liveRound.getLiveRoundStats(req, res);
+        const clientId = Date.now();
+
+        const newClient = {
+          id: clientId,
+          response: res,
+        };
+
+        clients.push(newClient);
+        console.log("clients", clients.length);
+
+        res.write(`data: ${data} \n\n`);
+
+        req.on(`close`, () => {
+          console.log(`${clientId} Connection closed`);
+          const index = clients.findIndex(
+            (client: any) => client.id == newClient.id
+          );
+          clients.splice(index - 1, 1);
+          console.log(clients.length);
+        });
+      } else {
+        const clientId = Date.now();
+
+        const newClient = {
+          id: clientId,
+          response: res,
+        };
+
+        clients.push(newClient);
+        console.log("clients", clients.length);
+
+        req.on(`close`, () => {
+          console.log(`${clientId} Connection closed`);
+          const index = clients.findIndex(
+            (client: any) => client.id == newClient.id
+          );
+          clients.splice(index - 1, 1);
+          console.log("clients", clients.length);
+        });
+      }
     } catch (err) {
       console.error(err);
+      return res.write("data: Internal server error \n\n");
     }
   },
   getNextRoundMatches: async (req: Request, res: Response) => {
@@ -109,4 +160,8 @@ export const RoundPlayingNow = {
       });
     } catch (err) {}
   },
+};
+
+const broadcastStream = (req: Request, res: Response, clients: IClient[]) => {
+  liveRound.getLiveRoundStats(req, res, clients);
 };

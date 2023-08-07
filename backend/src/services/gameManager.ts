@@ -14,6 +14,7 @@ import { RedisClient } from "../config/db";
 import { validationResult } from "express-validator";
 import { Team } from "../models/Team";
 import { SeasonCounter } from "../models/SeasonCounter";
+import { IClient } from "../types/ISSEClient";
 
 /**
  * params:
@@ -45,7 +46,6 @@ export class PlayRound {
           let homeTeam = roundMatch.homeTeam;
           let awayTeam = roundMatch.awayTeam;
           let matchID = roundMatch.id;
-          
 
           let matchSubject = new MatchSubject(matchID, homeTeam, awayTeam);
 
@@ -70,37 +70,16 @@ export class PlayRound {
     );
   }
 
-  //change streaming to sockets?
-  async getLiveRoundStats(req: Request, res: Response) {
-    const errors = validationResult(req);
+  //change streaming to sockets? No. Fixed sse by maintaining client connections array
+  //will have to take in clients array as argument, when data updates clients get live event updates
 
-    if (!errors.isEmpty()) {
-      console.log(errors);
-      let _errors = errors.array().map((error) => {
-        return {
-          msg: error.msg,
-          field: error.param,
-          success: false,
-        };
-      })[0];
-      return res.status(400).json(_errors);
-    }
+  getLiveRoundStats(req: Request, res: Response, clients: IClient[]) {
     try {
-      const headers = {
-        "Content-Type": "text/event-stream",
-        Connection: "keep-alive",
-        "Cache-Control": "no-cache",
-        "X-Accel-Buffering": "no",
-      };
-
-      res.writeHead(200, headers);
+      console.log("\n clients getliveroundstats", clients.length);
       this.sourceSubject.subscribe((data: any) => {
-        res.write(`data: ${data}\n\n`);
-        //console.log(data);
-      });
-
-      res.on("close", () => {
-        console.log("Client closed connection");
+        clients.forEach((client) => {
+          client.response.write(`data:{success: ${true}, data:{${data} } \n\n`);
+        });
       });
     } catch (err: any) {
       console.error(err.message);
