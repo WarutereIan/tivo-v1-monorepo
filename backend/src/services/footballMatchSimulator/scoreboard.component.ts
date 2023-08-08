@@ -598,7 +598,7 @@ export class ScoreboardComponent {
         this.matchSeconds = this.matchSeconds + 1;
         // when new minute starts
         //line below means minute is after every number of ms dictated in if condition below
-        if (this.matchSeconds > 1900) {
+        if (this.matchSeconds == 1950) {
           //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
           this._mainService.updateMatchMinutes(this.matchMinutes);
@@ -950,7 +950,7 @@ export class ScoreboardComponent {
           // if half time is approaching
           if (this.matchMinutes == 44) {
             // I need to set criteria to determine minutes added to first half
-            this.timeAddedToH1 = Math.round(Math.random() * 5);
+            this.timeAddedToH1 = Math.round(Math.random() * 2);
           }
           // HALF TIME
           if (
