@@ -54,7 +54,7 @@ export const RoundPlayingNow = {
 
         await seasonFixtures.storeFixturesInCache(); //update fixtures stored in cache
         //set match odds
-        broadcastStream(req, res, clients);
+        //broadcastStream(req, res, clients);
         return await Odds.setRoundOdds();
       } else {
         return console.error("\n Current round number not fetched! \n");
@@ -63,13 +63,15 @@ export const RoundPlayingNow = {
       console.error(err);
     }
   },
-  getCurrentRoundStats: async (req: Request, res: Response) => {
+  //got replaced with socket.io server
+  //TODO: improve the client id generator to uuid instead of time incase of simultaneous connections
+  /* getCurrentRoundStats: async (req: Request, res: Response) => {
     try {
       const roundStartedBool = await RedisClient.get("roundStartedBool");
 
       const nextDate = playLeagueCron.nextDate();
 
-      const headers = {
+      const headers = {  
         "Content-Type": "text/event-stream",
         Connection: "keep-alive",
         "Cache-Control": "no-cache",
@@ -129,7 +131,7 @@ export const RoundPlayingNow = {
       console.error(err);
       return res.write("data: Internal server error \n\n");
     }
-  },
+  }, */
   getNextRoundMatches: async (req: Request, res: Response) => {
     try {
       const nextRound = Number(await RedisClient.get("nextRound"));
@@ -160,8 +162,4 @@ export const RoundPlayingNow = {
       });
     } catch (err) {}
   },
-};
-
-const broadcastStream = (req: Request, res: Response, clients: IClient[]) => {
-  liveRound.getLiveRoundStats(req, res, clients);
 };
