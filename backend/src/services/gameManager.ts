@@ -15,6 +15,7 @@ import { validationResult } from "express-validator";
 import { Team } from "../models/Team";
 import { SeasonCounter } from "../models/SeasonCounter";
 import { IClient } from "../types/ISSEClient";
+import { io } from "../config/socketio";
 
 /**
  * params:
@@ -66,14 +67,18 @@ export class PlayRound {
         this.matchArrays.forEach((match: MatchSubject) => {
           match.startMatch();
         });
+
+        this.sourceSubject.subscribe((data: any) => {
+          io.emit("stats", data);
+        });
       }
     );
   }
 
-  //change streaming to sockets? No. Fixed sse by maintaining client connections array
+  //change streaming to sockets? Yes, changed to socket.io implementation above
   //will have to take in clients array as argument, when data updates clients get live event updates
 
-  getLiveRoundStats(req: Request, res: Response, clients: IClient[]) {
+  /* getLiveRoundStats(req: Request, res: Response, clients: IClient[]) {
     try {
       console.log("\n clients getliveroundstats", clients.length);
       this.sourceSubject.subscribe((data: any) => {
@@ -85,7 +90,7 @@ export class PlayRound {
       console.error(err.message);
       return res.status(500).send("Internal server error");
     }
-  }
+  } */
 
   async getSingleGameStats(req: Request, res: Response) {
     const errors = validationResult(req);

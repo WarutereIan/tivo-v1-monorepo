@@ -4,7 +4,8 @@ import { RoundPlayingNow } from "../../helpers/roundScheduler";
 
 const router = Router();
 
-router.get("/getLiveRoundStats", RoundPlayingNow.getCurrentRoundStats);
+//changed to socket.io implementation
+//router.get("/getLiveRoundStats", RoundPlayingNow.getCurrentRoundStats);
 
 router.get("/getSeasonFixtures", seasonFixtures.getFixturesFromCache);
 

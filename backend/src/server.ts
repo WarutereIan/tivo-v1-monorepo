@@ -1,5 +1,6 @@
-import { connectDB } from "./config/db";
+import { RedisClient, connectDB } from "./config/db";
 import express from "express";
+import * as SocketIO from "socket.io";
 import { configureMiddleware } from "./middlewares/config";
 import { configureRoutes } from "./routes";
 import { createServer } from "http";
@@ -12,6 +13,7 @@ import {
   payUserWalletsCron,
   playLeagueCron,
 } from "./cronJobs/cronJobs";
+import { io } from "./config/socketio";
 
 let db: any;
 (async () => {
@@ -64,6 +66,11 @@ httpServer.listen(config.PORT || 5000, () => {
     `PID ${process.pid} \n`
   );
 });
+
+//streaming will be proxied to this server in nginx
+io.listen(5500);
+
+console.log("Sockets server started on port 5500");
 
 //Start Cron jobs to play the leagues
 playLeagueCron.start();
