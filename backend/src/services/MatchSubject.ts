@@ -29,8 +29,14 @@ export class MatchSubject {
   matchDrawn!: boolean;
   homeTeamPoints!: number;
   awayTeamPoints!: number;
+  league!: string;
 
-  constructor(matchID: string, homeTeam: string, awayTeam: string) {
+  constructor(
+    matchID: string,
+    homeTeam: string,
+    awayTeam: string,
+    league: string
+  ) {
     this.matchID = matchID;
     this.homeTeam = homeTeam;
     this.awayTeam = awayTeam;
@@ -197,7 +203,7 @@ export class MatchSubject {
           this.homeTeamGoalsResult
         );
 
-        await RedisClient.set("roundStartedBool", "false");
+        await RedisClient.set(`roundStartedBool_${this.league}`, "false");
       }
     });
   }

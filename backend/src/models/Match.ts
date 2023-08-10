@@ -59,6 +59,10 @@ const MatchSchema = new Schema<IMatch>({
     type: String,
     default: "NOT STARTED",
   },
+  league: {
+    type: String,
+    required: true,
+  },
 });
 
 export const Match = model<IMatch>("Match", MatchSchema);

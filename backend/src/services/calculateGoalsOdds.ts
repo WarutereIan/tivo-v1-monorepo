@@ -2,7 +2,7 @@
 //get last season's total goals scored by all away sides
 
 import { Match } from "../models/Match";
-import { SeasonCounter } from "../models/SeasonCounter";
+import { Season } from "../models/Season";
 import { Team } from "../models/Team";
 import { ISeason } from "../types/ISeason";
 
@@ -22,13 +22,13 @@ import { ISeason } from "../types/ISeason";
 /**
  * @Dev function below will be called at the end of every season
  */
-export async function calculateTeamStrengths() {
+export async function calculateTeamStrengths(league: string) {
   let leagueGoalsAverageScoredHome: number,
     leagueGoalsAverageScoredAway: number,
     leagueGoalsAverageConcedHome: number,
     leagueGoalsAverageConcedAway: number;
   try {
-    let season = await SeasonCounter.findOne();
+    let season = await Season.findOne({ league: league });
 
     if (season) {
       leagueGoalsAverageScoredHome = season.last_season_home_mean_scored;
@@ -39,7 +39,7 @@ export async function calculateTeamStrengths() {
       throw new Error("Could not get season at calculateTeamOdds");
     }
 
-    for await (let team of Team.find()) {
+    for await (let team of Team.find({ league: league })) {
       const goalsScoredHome = team.goals_scored_home_previous_season;
       const goalsConcededHome = team.goals_conceded_home_previous_season;
 
@@ -80,8 +80,8 @@ class MatchGoalDistribution {
   leagueGoalsAverageConcededHome!: number;
   leagueGoalsAverageConcededAway!: number;
 
-  constructor() {
-    SeasonCounter.findOne().then((res: ISeason | null) => {
+  constructor(league: string) {
+    Season.findOne({ league: league }).then((res: ISeason | null) => {
       if (res) {
         this.leagueGoalsAverageScoredAway = res.last_season_away_mean_scored;
         this.leagueGoalsAverageScoredHome = res.last_season_home_mean_scored;
@@ -212,9 +212,9 @@ class MatchGoalDistribution {
     return probabilityArray;
   }
 
-  async updateLeagueAverages() {
+  async updateLeagueAverages(league: string) {
     try {
-      let season = await SeasonCounter.findOne();
+      let season = await Season.findOne({ league: league });
       if (season) {
         this.leagueGoalsAverageScoredAway = season.last_season_away_mean_scored;
         this.leagueGoalsAverageScoredHome = season.last_season_home_mean_scored;
@@ -278,4 +278,12 @@ class MatchGoalDistribution {
   }
 }
 
-export const MatchGoalDistributionManager = new MatchGoalDistribution();
+//will need to be imported and created in league specific instance
+export const MatchGoalDistributionManagers = {
+  EPL: new MatchGoalDistribution("EPL"),
+  LaLiga: new MatchGoalDistribution("LaLiga"),
+  Bundesliga: new MatchGoalDistribution("Bundesliga"),
+  SerieA: new MatchGoalDistribution("SerieA"),
+};
+
+

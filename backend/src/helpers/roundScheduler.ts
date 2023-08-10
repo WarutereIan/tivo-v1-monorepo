@@ -4,58 +4,69 @@ import { PlayRound, seasonFixtures } from "../services/gameManager";
 import { RedisClient } from "../config/db";
 import { Match } from "../models/Match";
 import { createNewSeason, resetTeamScores } from "../services/resetSeason";
-import { SeasonCounter } from "../models/SeasonCounter";
 import { calculateTeamStrengths } from "../services/calculateGoalsOdds";
 import { Odds } from "../services/bookMaker";
-import { playLeagueCron } from "../cronJobs/cronJobs";
-import { clients } from "../constants/sseClients";
-import { IClient } from "../types/ISSEClient";
+import { leagues } from "../config/leagues";
+import { Server } from "socket.io";
 
 let liveRound: PlayRound, currentSeasonNumber: number;
 
 export const RoundPlayingNow = {
-  startRound: async (req: Request, res: Response) => {
+  startRound: async (
+    req: Request,
+    res: Response,
+    league: string,
+    leagueServer: Server
+  ) => {
+    //pass league specific socket server
     try {
       const currentSeasonNumber = Number(
-        await RedisClient.get("currentSeasonNumber")
+        await RedisClient.get(`currentSeasonNumber_${league}`)
       );
 
-      const currentRoundDocument = await RoundCounter.findOne();
+      const currentRoundDocument = await RoundCounter.findOne({
+        league: league,
+      });
 
       if (currentRoundDocument) {
         const currentRound = currentRoundDocument.currentRound;
-        console.log("roundscheduler currentRound", currentRound);
+        console.log("roundscheduler currentRound", currentRound, league);
 
         if (currentRound >= 37) {
           //reset round counter to zero in mongodb and create new season
-          return createNewSeason().then((res) => {
+          return createNewSeason(league).then((res) => {
             if (res) {
-              calculateTeamStrengths().then(async (res) => {
+              calculateTeamStrengths(league).then(async (res) => {
                 if (res) {
-                  await resetTeamScores();
+                  await resetTeamScores(league);
                 }
               });
             }
           }); //also creates league averages from last season's data, to be used in calculating team strengths in next step
         }
 
-        await RedisClient.set("roundStartedBool", "true");
-        await RedisClient.set("currentRound", currentRound);
-        if (currentRound >= 37) await RedisClient.set("nextRound", 0);
-        else await RedisClient.set("nextRound", 1 + currentRound);
-        liveRound = new PlayRound(currentRound, currentSeasonNumber); //add means to check whether round is completed
+        await RedisClient.set(`roundStartedBool_${league}`, "true");
+        await RedisClient.set(`currentRound_${league}`, currentRound);
+        if (currentRound >= 37) await RedisClient.set(`nextRound_${league}`, 0);
+        else await RedisClient.set(`nextRound_${league}`, 1 + currentRound);
+        liveRound = new PlayRound(
+          currentRound,
+          currentSeasonNumber,
+          league,
+          leagueServer
+        ); //add means to check whether round is completed
 
-        console.info("\n New hourly round started:", currentRound);
+        console.info("\n New hourly round started:", league, currentRound);
 
         await RoundCounter.findOneAndUpdate(
-          {},
+          { league: league },
           { currentRound: 1 + currentRound }
         );
 
         await seasonFixtures.storeFixturesInCache(); //update fixtures stored in cache
         //set match odds
         //broadcastStream(req, res, clients);
-        return await Odds.setRoundOdds();
+        return await Odds.setRoundOdds(league);
       } else {
         return console.error("\n Current round number not fetched! \n");
       }
@@ -134,32 +145,75 @@ export const RoundPlayingNow = {
   }, */
   getNextRoundMatches: async (req: Request, res: Response) => {
     try {
-      const nextRound = Number(await RedisClient.get("nextRound"));
-      const currentSeasonNumber = Number(
-        await RedisClient.get("currentSeasonNumber")
-      );
-      //let nextRound = 0;
-      //currentRound ? (nextRound = Number(currentRound) + 1) : null;
-      console.log("get next round matches nextround", nextRound);
-      if (nextRound > 37) {
-        const nextRoundMatches = await Match.find({
-          round: 0,
-          season: currentSeasonNumber + 1,
-        });
-        return res.status(200).json({
-          success: true,
-          nextRoundMatches,
-        });
+      //return next round matches for each of the leagues in object
+
+      let NextRoundMatches: { [index: string]: {} } = {};
+
+      for (let i = 0; i < leagues.length; i++) {
+        const league = leagues[i];
+        const nextRound = Number(await RedisClient.get(`nextRound_${league}`));
+
+        let nextRoundMatches;
+        const currentSeasonNumber = Number(
+          await RedisClient.get(`currentSeasonNumber_${league}`)
+        );
+
+        if (nextRound > 37) {
+          nextRoundMatches = await Match.find({
+            round: 0,
+            season: currentSeasonNumber + 1,
+            league: league,
+          });
+
+          NextRoundMatches[league] = nextRoundMatches;
+        } else {
+          nextRoundMatches = await Match.find({
+            round: nextRound,
+            season: currentSeasonNumber,
+            league: league,
+          });
+
+          NextRoundMatches[league] = nextRoundMatches;
+        }
       }
 
-      const nextRoundMatches = await Match.find({
-        round: nextRound,
-        season: currentSeasonNumber,
-      });
+      /* leagues.forEach(async (league) => {
+          const nextRound = Number(
+            await RedisClient.get(`nextRound_${league}`)
+          );
+
+
+          let nextRoundMatches;
+          const currentSeasonNumber = Number(
+            await RedisClient.get(`currentSeasonNumber_${league}`)
+          );
+
+          if (nextRound > 37) {
+            nextRoundMatches = await Match.find({
+              round: 0,
+              season: currentSeasonNumber + 1,
+              league: league,
+            });
+
+            NextRoundMatches[league] = nextRoundMatches;
+          } else {
+            nextRoundMatches = await Match.find({
+              round: nextRound,
+              season: currentSeasonNumber,
+              league: league,
+            });
+
+            NextRoundMatches[league] = nextRoundMatches;
+          }
+        }); */
+
       return res.status(200).json({
         success: true,
-        nextRoundMatches,
+        NextRoundMatches,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send("Internal server error");
+    }
   },
 };
