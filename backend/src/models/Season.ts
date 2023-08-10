@@ -30,6 +30,9 @@ const SeasonSchema = new Schema<ISeason>({
     type: Number,
     required: true,
   },
+  league: {
+    type: String,
+  },
 });
 
-export const SeasonCounter = model<ISeason>("SeasonCounter", SeasonSchema);
+export const Season = model<ISeason>("Season", SeasonSchema);

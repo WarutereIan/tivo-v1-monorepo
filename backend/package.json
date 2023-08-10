@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node --files src/server.ts",
-    "create-league": "ts-node src/scripts/create-league",
+    "create-leagues": "ts-node src/scripts/create-leagues",
     "create-initial-fixtures": "ts-node src/scripts/create-initial-fixtures",
-    "create-initial-seasonCounter-document": " ts-node src/scripts/create-initial-season-counter",
+    "create-initial-seasons": " ts-node src/scripts/create-initial-seasons",
     "clear-dbs": "ts-node src/scripts/clear-dbs"
   },
   "keywords": [],

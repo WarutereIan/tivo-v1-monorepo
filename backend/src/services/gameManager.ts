@@ -1,21 +1,11 @@
 import { Request, Response } from "express";
 import { Match } from "../models/Match";
 import { MatchSubject } from "./MatchSubject";
-import {
-  combineLatest,
-  forkJoin,
-  interval,
-  map,
-  take,
-  withLatestFrom,
-  zip,
-} from "rxjs";
+import { combineLatest, interval, map, take, withLatestFrom } from "rxjs";
 import { RedisClient } from "../config/db";
 import { validationResult } from "express-validator";
-import { Team } from "../models/Team";
-import { SeasonCounter } from "../models/SeasonCounter";
-import { IClient } from "../types/ISSEClient";
-import { io } from "../config/socketio";
+import { Season } from "../models/Season";
+import { Server } from "socket.io";
 
 /**
  * params:
@@ -36,43 +26,57 @@ export class PlayRound {
   matchStats: any = [];
   combinedStats!: any;
   sourceSubject!: any;
+  league!: string;
 
-  constructor(roundNumber: number, currentSeasonNumber: number) {
+  constructor(
+    roundNumber: number,
+    currentSeasonNumber: number,
+    league: string,
+    leagueServer: Server
+  ) {
     /**
      * @param res is an array of objects, each object is a Match document
      */
-    Match.find({ round: roundNumber, season: currentSeasonNumber }).then(
-      (res) => {
-        res.forEach((roundMatch: any) => {
-          let homeTeam = roundMatch.homeTeam;
-          let awayTeam = roundMatch.awayTeam;
-          let matchID = roundMatch.id;
+    this.league = league;
+    Match.find({
+      round: roundNumber,
+      season: currentSeasonNumber,
+      league: league,
+    }).then((res) => {
+      res.forEach((roundMatch: any) => {
+        let homeTeam = roundMatch.homeTeam;
+        let awayTeam = roundMatch.awayTeam;
+        let matchID = roundMatch.id;
 
-          let matchSubject = new MatchSubject(matchID, homeTeam, awayTeam);
-
-          this.matchStats.push(matchSubject.MatchStats);
-
-          this.matchArrays.push(matchSubject);
-        });
-        this.combinedStats = combineLatest(this.matchStats);
-
-        this.sourceSubject = interval(2000).pipe(
-          take(105),
-          withLatestFrom(this.combinedStats),
-          map(([counter, stats]) => {
-            return stats;
-          })
+        let matchSubject = new MatchSubject(
+          matchID,
+          homeTeam,
+          awayTeam,
+          league
         );
 
-        this.matchArrays.forEach((match: MatchSubject) => {
-          match.startMatch();
-        });
+        this.matchStats.push(matchSubject.MatchStats);
 
-        this.sourceSubject.subscribe((data: any) => {
-          io.emit("stats", data);
-        });
-      }
-    );
+        this.matchArrays.push(matchSubject);
+      });
+      this.combinedStats = combineLatest(this.matchStats);
+
+      this.sourceSubject = interval(2000).pipe(
+        take(105),
+        withLatestFrom(this.combinedStats),
+        map(([counter, stats]) => {
+          return stats;
+        })
+      );
+
+      this.matchArrays.forEach((match: MatchSubject) => {
+        match.startMatch();
+      });
+
+      this.sourceSubject.subscribe((data: any) => {
+        leagueServer.emit("stats", data);
+      });
+    });
   }
 
   //change streaming to sockets? Yes, changed to socket.io implementation above
@@ -91,37 +95,15 @@ export class PlayRound {
       return res.status(500).send("Internal server error");
     }
   } */
-
-  async getSingleGameStats(req: Request, res: Response) {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      console.log(errors);
-      let _errors = errors.array().map((error) => {
-        return {
-          msg: error.msg,
-          field: error.param,
-          success: false,
-        };
-      })[0];
-      return res.status(400).json(_errors);
-    }
-
-    try {
-      const { gameRoundID } = req.params;
-    } catch (err: any) {
-      console.error(err.message);
-      return res.status(500).send("Internal server error");
-    }
-  }
 }
 
 //add or look for functionality to delete this round instance after round is completed
 
+//TODO:will make these season specific
 export const seasonFixtures = {
   storeFixturesInCache: async () => {
     try {
-      const currentSeason = await SeasonCounter.findOne();
+      const currentSeason = await Season.findOne({});
       const currentSeasonNumber = currentSeason?.currentSeasonNumber;
 
       const fixtures = await Match.find({ season: currentSeasonNumber });
@@ -132,6 +114,7 @@ export const seasonFixtures = {
     }
   },
 
+  //TODO: will also make these season specific and paginated
   getFixturesFromCache: async (req: Request, res: Response) => {
     const errors = validationResult(req);
 

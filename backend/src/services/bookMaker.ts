@@ -10,18 +10,16 @@
 
 import { RedisClient } from "../config/db";
 import { Match } from "../models/Match";
-import { RoundCounter } from "../models/RoundCounter";
-import { SeasonCounter } from "../models/SeasonCounter";
+import { Season } from "../models/Season";
 import { Team } from "../models/Team";
-import { MatchGoalDistributionManager } from "./calculateGoalsOdds";
 
 let currentSeasonCounter: number;
 
 export class Odds {
-  static setRoundOdds = async () => {
+  static setRoundOdds = async (league: string) => {
     try {
       //match odds set for current round in current season
-      const currentSeason = await SeasonCounter.findOne({});
+      const currentSeason = await Season.findOne({ league: league });
 
       if (currentSeason) {
         currentSeasonCounter = currentSeason.currentSeasonNumber;
@@ -32,7 +30,7 @@ export class Odds {
       }
 
       //const currentRoundDocument = await RoundCounter.findOne();
-      let nextRound = Number(await RedisClient.get("nextRound"));
+      let nextRound = Number(await RedisClient.get(`nextRound_${league}`));
 
       if (nextRound >= 37) nextRound = 0;
 
@@ -44,6 +42,7 @@ export class Odds {
       for await (const match of Match.find({
         round: nextRound,
         season: currentSeasonCounter,
+        league: league,
       }).select("homeTeam awayTeam homeTeamOdds awayTeamOdds")) {
         //home team stats
         let homeTeam = await Team.findOne({ name: match.homeTeam });
@@ -160,9 +159,9 @@ export class Odds {
     }
   };
 
-  static setTotalGoalsOdds = async () => {}; //will be set from probability distribution array
+  //static setTotalGoalsOdds = async () => {}; //will be set from probability distribution array
 
-  static calculateCorrectScorePredictionOdds = async () => {}; // will also be set from probability distribution array
+  //static calculateCorrectScorePredictionOdds = async () => {}; // will also be set from probability distribution array
 
   private calculateTotalGoalPredictionOdds(
     averageGoals: number,

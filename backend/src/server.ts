@@ -1,6 +1,5 @@
 import { RedisClient, connectDB } from "./config/db";
 import express from "express";
-import * as SocketIO from "socket.io";
 import { configureMiddleware } from "./middlewares/config";
 import { configureRoutes } from "./routes";
 import { createServer } from "http";
@@ -8,12 +7,14 @@ import { cpus } from "os";
 import cluster from "cluster";
 import { config } from "./config/config";
 import { initCacheValues } from "./config/initCacheValues";
+import { startCronJobs } from "./cronJobs/cronJobs";
 import {
-  checkSlipsCron,
-  payUserWalletsCron,
-  playLeagueCron,
-} from "./cronJobs/cronJobs";
-import { io } from "./config/socketio";
+  BundesligaServer,
+  EPLServer,
+  LaLigaServer,
+  SerieAServer,
+  startStreamingServers,
+} from "./config/socketio";
 
 let db: any;
 (async () => {
@@ -67,19 +68,8 @@ httpServer.listen(config.PORT || 5000, () => {
   );
 });
 
-//streaming will be proxied to this server in nginx
-io.listen(5500);
+//streaming will be proxied to these servers in nginx
+startStreamingServers();
 
-console.log("Sockets server started on port 5500");
-
-//Start Cron jobs to play the leagues
-playLeagueCron.start();
-
-//Start cron job to set odds after every round
-//setRoundOddsCron.start();
-
-//start cron job to process betslips
-checkSlipsCron.start();
-
-//start cron job to pay betslips after winning confirmed
-payUserWalletsCron.start();
+//
+startCronJobs();

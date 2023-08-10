@@ -10,7 +10,6 @@ export interface ICorrectScoreProbability {
   [score: string]: number;
 }
 
-
 export interface IMatch {
   homeTeam: string;
   awayTeam: string;
@@ -28,5 +27,6 @@ export interface IMatch {
   homeDoubleChanceOdds: number;
   awayDoubleChanceOdds: number;
   drawDoubleChanceOdds: number;
-  status: string //'STARTED', 'FINISHED', 'NOT STARTED' 
+  status: string; //'STARTED', 'FINISHED', 'NOT STARTED'
+  league: string;
 }
