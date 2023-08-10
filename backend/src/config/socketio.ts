@@ -8,10 +8,12 @@ import {
   SerieLeagueCron,
 } from "../cronJobs/cronJobs";
 
-export const EPLServer = new Server();
-export const BundesligaServer = new Server();
-export const SerieAServer = new Server();
-export const LaLigaServer = new Server();
+export const EPLServer = new Server({ path: "/streams/tivo-epl" });
+export const BundesligaServer = new Server({
+  path: "/streams/tivo-bundesliga",
+});
+export const SerieAServer = new Server({ path: "/streams/tivo-seriea" });
+export const LaLigaServer = new Server({ path: "/streams/tivo-laliga" });
 
 EPLServer.on("connection", async (socket) => {
   const roundStartedBool = await RedisClient.get(`roundStartedBool_EPL`);
