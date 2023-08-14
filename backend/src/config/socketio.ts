@@ -89,13 +89,13 @@ LaLigaServer.on("connection", async (socket) => {
 
 export const startStreamingServers = () => {
   try {
-    EPLServer.listen(51000);
+    EPLServer.listen(5500);
     console.info(`EPLStreamingServer started on port 51000 \n`);
 
     BundesligaServer.listen(6000);
     console.info(`BundesligaStreamingServer started on port 6000 \n`);
 
-    LaLigaServer.listen(61000);
+    LaLigaServer.listen(6500);
     console.info(`LaLigaStreamingServer started on port 61000 \n`);
 
     SerieAServer.listen(7000);
