@@ -18,6 +18,7 @@ export const EPLeagueCron = new CronJob(" 0/8 * * * *", async () => {
     await RoundPlayingNow.startRound(request, response, "EPL", EPLServer);
   } catch (err) {
     console.error(err);
+    process.exit(1);
   }
 });
 
@@ -27,6 +28,7 @@ export const LaLigaLeagueCron = new CronJob(" 0/8 * * * *", async () => {
     await RoundPlayingNow.startRound(request, response, "LaLiga", LaLigaServer);
   } catch (err) {
     console.error(err);
+    process.exit(1);
   }
 });
 
@@ -41,6 +43,7 @@ export const BundesligaLeagueCron = new CronJob(" 0/8 * * * *", async () => {
     );
   } catch (err) {
     console.error(err);
+    process.exit(1);
   }
 });
 
@@ -50,6 +53,7 @@ export const SerieLeagueCron = new CronJob(" 0/8 * * * *", async () => {
     await RoundPlayingNow.startRound(request, response, "SerieA", SerieAServer);
   } catch (err) {
     console.error(err);
+    process.exit(1);
   }
 });
 

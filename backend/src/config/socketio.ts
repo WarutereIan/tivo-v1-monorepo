@@ -21,13 +21,15 @@ EPLServer.on("connection", async (socket) => {
   const nextDate = EPLeagueCron.nextDate();
 
   if (roundStartedBool !== "true") {
-    const data = {
-      success: false,
-      roundStatus: `Not started`,
-      nextStartsAt: nextDate.toISOTime(),
-    };
+    setTimeout(() => {
+      const data = {
+        success: false,
+        roundStatus: `Not started`,
+        nextStartsAt: nextDate.toISOTime(),
+      };
 
-    socket.emit("not_started", data);
+      socket.emit("not_started", data);
+    }, 1000);
   }
 });
 
@@ -37,13 +39,15 @@ BundesligaServer.on("connection", async (socket) => {
   const nextDate = BundesligaLeagueCron.nextDate();
 
   if (roundStartedBool !== "true") {
-    const data = {
-      success: false,
-      roundStatus: `Not started`,
-      nextStartsAt: nextDate.toISOTime(),
-    };
+    setTimeout(() => {
+      const data = {
+        success: false,
+        roundStatus: `Not started`,
+        nextStartsAt: nextDate.toISOTime(),
+      };
 
-    socket.emit("not_started", data);
+      socket.emit("not_started", data);
+    }, 1000);
   }
 });
 
@@ -53,13 +57,15 @@ SerieAServer.on("connection", async (socket) => {
   const nextDate = SerieLeagueCron.nextDate();
 
   if (roundStartedBool !== "true") {
-    const data = {
-      success: false,
-      roundStatus: `Not started`,
-      nextStartsAt: nextDate.toISOTime(),
-    };
+    setTimeout(() => {
+      const data = {
+        success: false,
+        roundStatus: `Not started`,
+        nextStartsAt: nextDate.toISOTime(),
+      };
 
-    socket.emit("not_started", data);
+      socket.emit("not_started", data);
+    }, 1000);
   }
 });
 
@@ -69,29 +75,31 @@ LaLigaServer.on("connection", async (socket) => {
   const nextDate = LaLigaLeagueCron.nextDate();
 
   if (roundStartedBool !== "true") {
-    const data = {
-      success: false,
-      roundStatus: `Not started`,
-      nextStartsAt: nextDate.toISOTime(),
-    };
+    setTimeout(() => {
+      const data = {
+        success: false,
+        roundStatus: `Not started`,
+        nextStartsAt: nextDate.toISOTime(),
+      };
 
-    socket.emit("not_started", data);
+      socket.emit("not_started", data);
+    }, 1000);
   }
 });
 
 export const startStreamingServers = () => {
   try {
-    EPLServer.listen(5500);
-    console.log(`EPLStreamingServer started on port 5500 \n`);
+    EPLServer.listen(51000);
+    console.info(`EPLStreamingServer started on port 51000 \n`);
 
     BundesligaServer.listen(6000);
-    console.log(`BundesligaStreamingServer started on port 6000 \n`);
+    console.info(`BundesligaStreamingServer started on port 6000 \n`);
 
-    LaLigaServer.listen(6500);
-    console.log(`LaLigaStreamingServer started on port 6500 \n`);
+    LaLigaServer.listen(61000);
+    console.info(`LaLigaStreamingServer started on port 61000 \n`);
 
     SerieAServer.listen(7000);
-    console.log(`SerieAStreamingServer started on port 7000 \n`);
+    console.info(`SerieAStreamingServer started on port 7000 \n`);
   } catch (err) {
     console.error(err);
     process.exit(1);
