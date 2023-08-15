@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -47,4 +47,4 @@ jobs:
             git pull
             cd /root/v-fb-casino-core/backend
             npm install
-            pm2 start npm --name "api" -- run "start"
+            pm2 start npm --name "api" -- run "start" --node-args="--max-old-space-size=2048"
