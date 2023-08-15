@@ -9,8 +9,6 @@ import { Odds } from "../services/bookMaker";
 import { leagues } from "../config/leagues";
 import { Server } from "socket.io";
 
-let liveRound: PlayRound, currentSeasonNumber: number;
-
 export const RoundPlayingNow = {
   startRound: async (
     req: Request,
@@ -49,7 +47,7 @@ export const RoundPlayingNow = {
         await RedisClient.set(`currentRound_${league}`, currentRound);
         if (currentRound >= 37) await RedisClient.set(`nextRound_${league}`, 0);
         else await RedisClient.set(`nextRound_${league}`, 1 + currentRound);
-        liveRound = new PlayRound(
+        const liveRound = new PlayRound(
           currentRound,
           currentSeasonNumber,
           league,
