@@ -51,8 +51,8 @@ export const initCacheValues = async () => {
       await seasonFixtures.storeFixturesInCache();
       console.log("Football Match fixtures stored in cache for ", league, "\n");
 
-      await RedisClient.set(`roundStartedBool_${league}`, 0);
-      console.log("RoundStartedBool set to false for league", league, "\n");
+      /* await RedisClient.set(`roundStartedBool_${league}`, 0);
+      console.log("RoundStartedBool set to false for league", league, "\n"); */
     });
   } catch (err) {
     console.error(err);
