@@ -69,7 +69,7 @@ httpServer.listen(config.PORT || 5000, () => {
 });
 
 //streaming will be proxied to these servers in nginx
-startStreamingServers();
+//startStreamingServers();
 
 //
 startCronJobs();

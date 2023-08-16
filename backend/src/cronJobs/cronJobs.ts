@@ -77,10 +77,10 @@ const payUserWalletsCron = new CronJob("0/5 * * * *", async () => {
 
 export const startCronJobs = () => {
   try {
-    EPLeagueCron.start();
+    /* EPLeagueCron.start();
     LaLigaLeagueCron.start();
     BundesligaLeagueCron.start();
-    SerieLeagueCron.start();
+    SerieLeagueCron.start(); */
     checkSlipsCron.start();
     payUserWalletsCron.start();
   } catch (err) {
