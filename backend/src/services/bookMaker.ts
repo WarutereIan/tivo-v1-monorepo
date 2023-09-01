@@ -138,19 +138,46 @@ export class Odds {
         if (finalOddsDraw >= 5)
           finalOddsDraw = Number((Math.random() * 4 + 1).toFixed(2));
 
-        match.homeTeamOdds = finalOddsHome;
-        match.awayTeamOdds = finalOddsAway;
-        match.drawOdds = finalOddsDraw;
-        match.homeDoubleChanceOdds = Number(adjustedHomeDChanceOdds.toFixed(2));
-        match.awayDoubleChanceOdds = Number(adjustedAwayDchanceOdds.toFixed(2));
+        match.homeTeamOdds = {
+          id: match.id,
+          homeTeam: match.homeTeam,
+          awayTeam: match.awayTeam,
+          prediction: "1",
+          odds: finalOddsHome,
+        };
+        match.awayTeamOdds = {
+          id: match.id,
+          homeTeam: match.homeTeam,
+          awayTeam: match.awayTeam,
+          prediction: "2",
+          odds: finalOddsAway,
+        };
+        match.drawOdds = {
+          id: match.id,
+          homeTeam: match.homeTeam,
+          awayTeam: match.awayTeam,
+          prediction: "X",
+          odds: finalOddsDraw,
+        };
+        match.homeDoubleChanceOdds = {
+          id: match.id,
+          homeTeam: match.homeTeam,
+          awayTeam: match.awayTeam,
+          prediction: "homeDoubleChanceOdds",
+          odds: Number(adjustedHomeDChanceOdds.toFixed(2)),
+        }; //Number(adjustedHomeDChanceOdds.toFixed(2));
+        match.awayDoubleChanceOdds = {
+          id: match.id,
+          homeTeam: match.homeTeam,
+          awayTeam: match.awayTeam,
+          prediction: "awayDoubleChanceOdds",
+          odds: Number(adjustedAwayDchanceOdds.toFixed(2)),
+        }; //Number(adjustedAwayDchanceOdds.toFixed(2));
         //match.drawDoubleChanceOdds = Number(adjustedDrawDChanceOdds.toFixed(2));
 
         //add odds for double chance
         await match.save();
-        console.info(
-          `Set odds for match ${match.id} as home: ${finalOddsHome}, and away: ${finalOddsAway}, draw`,
-          finalOddsDraw
-        );
+        console.info(`Set odds for match ${match.id} as ${match}`);
       }
 
       return console.info(`Match odds for round ${nextRound} set`);
