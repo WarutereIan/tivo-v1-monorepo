@@ -173,37 +173,9 @@ export const RoundPlayingNow = {
 
           NextRoundMatches[league] = nextRoundMatches;
         }
+
+        console.log(nextRoundMatches);
       }
-
-      /* leagues.forEach(async (league) => {
-          const nextRound = Number(
-            await RedisClient.get(`nextRound_${league}`)
-          );
-
-
-          let nextRoundMatches;
-          const currentSeasonNumber = Number(
-            await RedisClient.get(`currentSeasonNumber_${league}`)
-          );
-
-          if (nextRound > 37) {
-            nextRoundMatches = await Match.find({
-              round: 0,
-              season: currentSeasonNumber + 1,
-              league: league,
-            });
-
-            NextRoundMatches[league] = nextRoundMatches;
-          } else {
-            nextRoundMatches = await Match.find({
-              round: nextRound,
-              season: currentSeasonNumber,
-              league: league,
-            });
-
-            NextRoundMatches[league] = nextRoundMatches;
-          }
-        }); */
 
       return res.status(200).json({
         success: true,

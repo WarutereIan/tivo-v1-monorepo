@@ -1,0 +1,47 @@
+{
+                                "_id": "64e3981068b9c2e8cc36022e",
+                                "homeTeam": "Arsenal",
+                                "awayTeam": "Tottenham Hotspur",
+                                "round": 35,
+                                "season": 56,
+                                "homeTeam_goal_distribution_by_probability": [],
+                                "awayTeam_goal_distribution_by_probability": [],
+                                "status": "NOT STARTED",
+                                "league": "EPL",
+                                "__v": 0,
+                                "awayDoubleChanceOdds": {
+                                        "id": "64e3981068b9c2e8cc36022e",
+                                        "homeTeam": "Arsenal",
+                                        "awayTeam": "Tottenham Hotspur",
+                                        "prediction": "awayDoubleChance",
+                                        "odds": 1.57
+                                },
+                                "awayTeamOdds": {
+                                        "id": "64e3981068b9c2e8cc36022e",
+                                        "homeTeam": "Arsenal",
+                                        "awayTeam": "Tottenham Hotspur",
+                                        "prediction": "2",
+                                        "odds": 1.82
+                                },
+                                "drawOdds": {
+                                        "id": "64e3981068b9c2e8cc36022e",
+                                        "homeTeam": "Arsenal",
+                                        "awayTeam": "Tottenham Hotspur",
+                                        "prediction": "X",
+                                        "odds": 1.41
+                                },
+                                "homeDoubleChanceOdds": {
+                                        "id": "64e3981068b9c2e8cc36022e",
+                                        "homeTeam": "Arsenal",
+                                        "awayTeam": "Tottenham Hotspur",
+                                        "prediction": "homeDoubleChance",
+                                        "odds": 1.56
+                                },
+                                "homeTeamOdds": {
+                                        "id": "64e3981068b9c2e8cc36022e",
+                                        "homeTeam": "Arsenal",
+                                        "awayTeam": "Tottenham Hotspur",
+                                        "prediction": "1",
+                                        "odds": 3.64
+                                }
+                        },

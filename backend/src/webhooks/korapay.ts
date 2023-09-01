@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Deposit } from "../src/models/Deposit";
-import { Wallet } from "../src/models/Wallet";
-import { config } from "../src/config/config";
+import { Deposit } from "../models/Deposit";
+import { Wallet } from "../models/Wallet";
+import { config } from "../config/config";
 import crypto from "crypto";
 
 export const processKoraResponse = async (req: Request, res: Response) => {

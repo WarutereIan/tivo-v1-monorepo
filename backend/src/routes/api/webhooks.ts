@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { processKoraResponse } from "../../../webhooks/korapay";
+import { processKoraResponse } from "../../webhooks/korapay";
 
 const router = Router();
 

@@ -42,7 +42,7 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            pm2 delete all
+            pm2 delete api
             cd /root/v-fb-casino-core
             git pull
             cd /root/v-fb-casino-core/backend
