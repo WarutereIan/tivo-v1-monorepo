@@ -69,7 +69,9 @@ export const useKoraPay = async (
 
     console.log(result.data.data.checkout_url);
 
-    return res.status(200).redirect(result.data.data.checkout_url);
+    return res
+      .status(200)
+      .json({ success: true, msg: result.data.data.checkout_url });
   } catch (err) {
     console.error(err);
     return res
