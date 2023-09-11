@@ -1,10 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const KoraPayDepositSchema = new Schema<IDeposit>({
-  referenceId: {
-    type: String,
-    required: true,
-  },
+const WithdrawalSchema = new Schema<IWithdrawal>({
   userId: {
     type: String,
     required: true,
@@ -22,7 +18,7 @@ const KoraPayDepositSchema = new Schema<IDeposit>({
     type: String,
     required: true,
   },
-  depositedInWallet: {
+  paidOut: {
     type: Boolean,
     required: true,
   },
@@ -39,4 +35,4 @@ const KoraPayDepositSchema = new Schema<IDeposit>({
   },
 });
 
-export const Deposit = model<IDeposit>("Deposit", KoraPayDepositSchema);
+export const Withdrawal = model<IWithdrawal>("Withdrawals", WithdrawalSchema);

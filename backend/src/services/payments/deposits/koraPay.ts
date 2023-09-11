@@ -1,9 +1,9 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { config } from "../../config/config";
+import { config } from "../../../config/config";
 import { Request, Response, response } from "express";
-import { RedisClient } from "../../config/db";
-import { Deposit } from "../../models/Deposit";
+import { RedisClient } from "../../../config/db";
+import { Deposit } from "../../../models/Deposit";
 
 export const useKoraPay = async (
   req: Request,
@@ -63,7 +63,9 @@ export const useKoraPay = async (
       paymentGateway: "korapay",
     });
 
-    console.info(`Deposit log created for referenceId: {${uuid}}`);
+    console.info(
+      `Deposit doc created for referenceId: {${uuid}}, userId:${userid},time: ${new Date().toDateString()}`
+    );
 
     const reference = result.data.data.reference;
 

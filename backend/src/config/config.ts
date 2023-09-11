@@ -10,9 +10,17 @@ export const config = {
   KORA_INITIALIZE_CHARGE_URL:
     "https://api.korapay.com/merchant/api/v1/charges/initialize",
 
+  KORA_BULK_WITHDRAWAL_URL:
+    "https://api.korapay.com/api/v1/transactions/disburse/bulk",
+
   KORA_NOTIFICATION_URL: process.env.KORA_NOTIFICATION_URL,
 
+  KORA_WITHDRAWAL_NOTIFICATION_URL:
+    process.env.KORA_WITHDRAWAL_NOTIFICATION_URL,
+
   KORA_REDIRECT_URL: process.env.KORA_REDIRECT_URL,
+
+  MSG_BROKER_URL: process.env.MSG_BROKER_URL!,
 
   PORT: process.env.PORT,
 
