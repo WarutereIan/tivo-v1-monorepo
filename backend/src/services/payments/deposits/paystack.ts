@@ -1,5 +1,5 @@
 import https from "https";
-import { config } from "../../config/config";
+import { config } from "../../../config/config";
 import { response } from "express";
 
 export const usePaystack = async (amount: number, email: string) => {

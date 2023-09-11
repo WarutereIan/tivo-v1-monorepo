@@ -3,7 +3,9 @@ import { validateToken } from "../../middlewares/auth";
 import { Football } from "../../controllers/betHandler";
 import { Wallets } from "../../services/wallets.ts/Wallets";
 import { Betslips } from "../../services/betslips/Betslips";
-import { deposit } from "../../services/payments/userDeposit";
+import { deposit } from "../../services/payments/deposits/userDeposit";
+import { withdraw } from "../../services/payments/withdrawals/UserWithdrawals";
+import { playInstantVirtual } from "../../services/instantVirtual/clientInterface";
 
 const router = Router();
 
@@ -16,5 +18,9 @@ router.get("/getBetslips", validateToken, Betslips.getUserBetslips);
 router.post("/importBetslip", validateToken, Betslips.importBetslip);
 
 router.post("/deposit", validateToken, deposit);
+
+router.post("/withdraw", validateToken, withdraw);
+
+router.post("/play-instant-virtual", validateToken, playInstantVirtual);
 
 module.exports = router;

@@ -1,8 +1,8 @@
 import https from "https";
 
 import { validationResult } from "express-validator";
-import { User } from "../../models/User";
-import { config } from "../../config/config";
+import { User } from "../../../models/User";
+import { config } from "../../../config/config";
 import { Request, Response } from "express";
 import { usePaystack } from "./paystack";
 import { useKoraPay } from "./koraPay";
