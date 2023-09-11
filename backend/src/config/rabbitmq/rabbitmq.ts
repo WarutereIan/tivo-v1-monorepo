@@ -1,6 +1,5 @@
 import { Connection } from "rabbitmq-client";
 import { config } from "../config";
-import { error } from "jquery";
 import {
   initKora_W_Batch_Consumer,
   initKora_W_Req_Consumer,
