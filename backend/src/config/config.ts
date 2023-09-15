@@ -26,4 +26,12 @@ export const config = {
 
   JWT_SECRET: process.env.JWT_SECRET!,
   JWT_TOKEN_EXPIRES_IN: 3600000 * 12, //expires in 12hours
+
+  MONNIFY: {
+    MONNIFY_API_KEY: process.env.MONNIFY_API_KEY!,
+    MONNIFY_SECRET_KEY: process.env.MONNIFY_SECRET_KEY!,
+    MONNIFY_BASE_URL_TEST: process.env.MONNIFY_BASE_URL_TEST!,
+    MONNIFY_WALLET_ACCOUNT_NUMBER: process.env.MONNIFY_WALLET_ACCOUNT_NUMBER!,
+    MONNIFY_CONTRACT_CODE: process.env.MONNIFY_CONTRACT_CODE!,
+  },
 };

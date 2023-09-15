@@ -7,6 +7,8 @@ export const Publisher = RabbitMQ.createPublisher({
     { exchange: "deposits", type: "topic" },
     { exchange: "withdrawalRequests", type: "topic" },
     { exchange: "koraWithdrawalRequestsBatches", type: "topic" },
-    
+    { exchange: "monnifyWithdrawalRequestsBatches", type: "topic" },
+    { exchange: "monnifyDepositsResponses", type: "topic" },
+    { exchange: "monnifyWithdrawalsResponses", type: "topic" },
   ],
 });

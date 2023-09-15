@@ -4,6 +4,12 @@ import {
   initKora_W_Batch_Consumer,
   initKora_W_Req_Consumer,
 } from "../../services/payments/withdrawals/korapay/koraBatch";
+import {
+  initMonnify_W_Batch_Consumer,
+  initMonnify_W_Req_Consumer,
+} from "../../services/payments/withdrawals/monnify/monnifyBatch";
+import { processMonnifyDepoResponses } from "../../services/processQueues/processDeposits/monnifyDeposits";
+import { initMonnifyWithdrawalResponseConsumer } from "../../services/processQueues/processDeposits/monnifyWithdrawals";
 
 const brokerUrl = config.MSG_BROKER_URL;
 
@@ -17,4 +23,8 @@ RabbitMQ.on("connection", () => {
   console.log("RabbitMQ connected ");
   initKora_W_Req_Consumer();
   initKora_W_Batch_Consumer();
+  initMonnify_W_Req_Consumer();
+  initMonnify_W_Batch_Consumer();
+  processMonnifyDepoResponses();
+  initMonnifyWithdrawalResponseConsumer();
 });

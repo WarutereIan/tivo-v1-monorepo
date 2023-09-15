@@ -4,7 +4,7 @@ import { Publisher } from "../../../../config/rabbitmq/publishers";
 import { RabbitMQ } from "../../../../config/rabbitmq/rabbitmq";
 import axios from "axios";
 
-let batchSize = 0;
+
 let batchArray: any[] = [];
 //let batch: { [index: number]: any } = {};
 const bulkWithdrawalUrl = config.KORA_BULK_WITHDRAWAL_URL;

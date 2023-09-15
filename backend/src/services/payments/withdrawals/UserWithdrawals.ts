@@ -6,7 +6,7 @@ import { config } from "../../../config/config";
 import { Request, Response } from "express";
 import { Wallet } from "../../../models/Wallet";
 import { useKoraPay } from "./korapay/korapay";
-
+import { useMonnify } from "./monnify/monnify";
 
 const paystackSecret = config.PAYSTACK_SECRET;
 
@@ -61,6 +61,12 @@ export const withdraw = async (req: Request, res: Response) => {
         await useKoraPay(req, res, email, username, amount, user, bankdetails);
         break;
       }
+
+      case "monnify": {
+        await useMonnify(req, res, email, username, amount, user, bankdetails);
+        break;
+      }
+
       case "": {
         return res
           .status(200)
