@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
 
-const KoraPayDepositSchema = new Schema<IDeposit>({
+const DepositSchema = new Schema<IDeposit>({
   referenceId: {
     type: String,
-    required: true,
+    //required: true,
   },
   userId: {
     type: String,
@@ -39,4 +39,4 @@ const KoraPayDepositSchema = new Schema<IDeposit>({
   },
 });
 
-export const Deposit = model<IDeposit>("Deposit", KoraPayDepositSchema);
+export const Deposit = model<IDeposit>("Deposit", DepositSchema);

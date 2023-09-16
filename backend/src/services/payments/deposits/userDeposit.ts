@@ -6,6 +6,7 @@ import { config } from "../../../config/config";
 import { Request, Response } from "express";
 import { usePaystack } from "./paystack";
 import { useKoraPay } from "./koraPay";
+import { useMonnify } from "./monnify";
 
 const paystackSecret = config.PAYSTACK_SECRET;
 
@@ -46,6 +47,11 @@ export const deposit = async (req: Request, res: Response) => {
       }
       case "korapay": {
         await useKoraPay(req, res, email, username, amount, user);
+        break;
+      }
+
+      case "monnify": {
+        await useMonnify(req, res, user, username, email, amount);
         break;
       }
       case "": {

@@ -38,6 +38,8 @@
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "ioredis": "^5.3.2",
+    "js-base64": "^3.7.5",
+    "js-sha512": "^0.8.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.2",
     "os": "^0.1.2",
