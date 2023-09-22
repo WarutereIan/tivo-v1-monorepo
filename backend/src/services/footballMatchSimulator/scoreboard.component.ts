@@ -598,7 +598,7 @@ export class ScoreboardComponent {
         this.matchSeconds = this.matchSeconds + 1;
         // when new minute starts
         //line below means minute is after every number of ms dictated in if condition below
-        if (this.matchSeconds == 2) {
+        if (this.matchSeconds == 1) {
           //here you vary the length of the match in actual min: workout what this equates to
           this.matchMinutes = this.matchMinutes + 1;
           this._mainService.updateMatchMinutes(this.matchMinutes);
@@ -1057,11 +1057,11 @@ export class ScoreboardComponent {
           }
         }
       }
-    }, 1);
+    }, 2000);
 
     //this._mainService.updateMatchHasStarted(false)
   }
-  playAnotherMatch() {
+  /*  playAnotherMatch() {
     location.reload();
-  }
+  } */
 }
