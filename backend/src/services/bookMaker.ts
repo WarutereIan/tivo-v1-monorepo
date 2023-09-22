@@ -15,6 +15,10 @@ import { Team } from "../models/Team";
 
 let currentSeasonCounter: number;
 
+///////// need to export bookmaker code for instant virtuals
+
+const unused = null;
+
 export class Odds {
   static setRoundOdds = async (league: string) => {
     try {
