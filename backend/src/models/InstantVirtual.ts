@@ -29,6 +29,14 @@ const InstantVirtualSchema = new Schema<IInstantVirtual>({
     type: String,
     required: true,
   },
+  won: {
+    type: Boolean,
+    required: true,
+  },
+  played: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 export const InstantVirtual = model<IInstantVirtual>(

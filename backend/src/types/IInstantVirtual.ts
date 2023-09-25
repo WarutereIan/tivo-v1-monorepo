@@ -7,4 +7,6 @@ export interface IInstantVirtual {
   amountStaked: number;
   homeTeam: string;
   awayTeam: string;
+  played: boolean;
+  won: boolean;
 }

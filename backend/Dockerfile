@@ -4,7 +4,7 @@
 # If you need more help, visit the Dockerfile reference guide at
 # https://docs.docker.com/engine/reference/builder/
 
-ARG NODE_VERSION=16.18.1
+ARG NODE_VERSION=18.18.0 
 
 FROM node:${NODE_VERSION}-alpine
 
