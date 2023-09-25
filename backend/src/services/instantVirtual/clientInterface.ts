@@ -25,35 +25,40 @@ export const playInstantVirtual = async (req: Request, res: Response) => {
   const { prediction, amountStaked, homeTeam, awayTeam } = req.body;
 
   try {
+    //calculate match odds?
+    //use fixed odds for a start, say 1.4
+
+    const odds = 1.35;
+
+    /**
+     * New strategy: Instant virtual wil run as independent scalable container
+     *
+     * So, loosely couple it all, with auth as a microservice, payments as microservice?
+     */
+
     const instantVirtual = await InstantVirtual.create({
       prediction: prediction,
       userID: userID,
       amountStaked: amountStaked,
       homeTeam: homeTeam,
       awayTeam: awayTeam,
+      played: false,
+      won: false,
     });
 
     const matchID = instantVirtual?.id;
-    
+
     //fetch match odds from existing odds: generate odds from already established bookmaker as based on team strengths
 
-
-    const instantVirtualMatch = new InstantVirtualMatch(
-      matchID,
-      homeTeam,
-      awayTeam
-    );
-
-      const userWallet = await Wallet.findOne({ ownerID: userID });
-      if (userWallet) {
-        userWallet.currentBalance -= amountStaked;
-        await userWallet.save();
-      } else {
-        throw new Error(
-          `Could not fetch user wallet at for instant virtual: User:${userID}`
-        );
-      }
-
+    const userWallet = await Wallet.findOne({ ownerID: userID });
+    if (userWallet) {
+      userWallet.currentBalance -= amountStaked;
+      await userWallet.save();
+    } else {
+      throw new Error(
+        `Could not fetch user wallet for instant virtual: User:${userID}`
+      );
+    }
 
     const worker = new Worker(__dirname + "/worker.js", {
       workerData: {
@@ -64,7 +69,6 @@ export const playInstantVirtual = async (req: Request, res: Response) => {
       },
     });
 
-  
     /**
      *   //do this in main thread/process? let's see
         await InstantVirtual.findOneAndUpdate(
@@ -75,7 +79,7 @@ export const playInstantVirtual = async (req: Request, res: Response) => {
         );
      */
 
-    worker.on("message", (msg) => {
+    worker.on("message", async (msg) => {
       console.log(msg);
 
       const msgFormat = {
@@ -87,11 +91,38 @@ export const playInstantVirtual = async (req: Request, res: Response) => {
       };
 
       //user won
-      if (msg.winner == prediction) {
-        
-      }
+      if (msg.winner == instantVirtual.prediction) {
+        const winnings = amountStaked * odds;
 
-      return res.status(200).json({ success: true, msg });
+        //update wallet with winnings,
+        const userWallet = await Wallet.findOne({ ownerID: userID });
+        if (userWallet) {
+          userWallet.currentBalance += winnings;
+          await userWallet.save();
+          console.log(
+            `User wallet updated with instant virtual winnings: User:${userID}, instantVirtual: ${instantVirtual.id}, amount: ${amountStaked}`
+          );
+        }
+
+        //then update instant virtual doc
+        instantVirtual.results = msg;
+        instantVirtual.played = true;
+        instantVirtual.won = true;
+
+        await instantVirtual.save();
+
+        return res.status(200).json({ success: true, won: true, msg });
+      } else {
+        //only update instant virtual doc
+        instantVirtual.results = msg;
+        instantVirtual.played = true;
+        instantVirtual.won = false;
+
+        
+        await instantVirtual.save();
+
+        return res.status(200).json({ success: true, won: false, msg });
+      }
     });
   } catch (err) {
     console.error(err);

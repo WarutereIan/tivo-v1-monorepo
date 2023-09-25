@@ -15,6 +15,6 @@ instantVirtual.MatchStats.subscribe((data: any) => {
   if (data == "Full time") {
     setTimeout(() => {
       parentPort?.postMessage(instantVirtual.matchResults);
-    }, 50);
+    }, 5);
   }
 });

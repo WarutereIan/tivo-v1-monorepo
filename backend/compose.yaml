@@ -17,8 +17,7 @@ services:
     network_mode: "host"
 
   api:
-    build:
-      context: .
+    image: ianengsen/tivobet:api-v1-dev
 
     network_mode: "host"
     env_file:
