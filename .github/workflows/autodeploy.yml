@@ -48,3 +48,4 @@ jobs:
             cd /root/v-fb-casino-core/backend
             docker compose stop
             docker compose up -d
+            cd ..
