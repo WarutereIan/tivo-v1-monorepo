@@ -1,0 +1,49 @@
+---
+- title: Secondary game
+  identifier: acceptance:secondary_test
+  identifier2: 
+  provider: acceptance
+  producer: softswiss
+  category: slots
+  theme: other
+  has_freespins: true
+  feature_group: basic
+  customised: false
+  devices:
+  - desktop
+  - mobile
+  licenses:
+  - BE
+  - BG
+  - BY
+  - EE
+  - MT
+  jackpot_type: Not Available
+  forbid_bonus_play: false
+  restrictions:
+    default:
+      blacklist: []
+- title: Tests
+  identifier: acceptance:test
+  identifier2: 
+  provider: acceptance
+  producer: softswiss
+  category: slots
+  theme: other
+  has_freespins: true
+  feature_group: basic
+  customised: false
+  devices:
+  - desktop
+  - mobile
+  licenses:
+  - BE
+  - BG
+  - BY
+  - EE
+  - MT
+  jackpot_type: Not Available
+  forbid_bonus_play: false
+  restrictions:
+    default:
+      blacklist: []

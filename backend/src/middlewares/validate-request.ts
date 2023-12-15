@@ -8,8 +8,16 @@ export const validateRequest = (
     next: NextFunction
 ) =>{
     const errors = validationResult(req)
-    if (!errors.isEmpty()){
-        throw new RequestValidationError(errors.array())
-    }
+   if (!errors.isEmpty()) {
+     console.log(errors);
+     let _errors = errors.array().map((error) => {
+       return {
+         msg: error.msg,
+         field: error.param,
+         success: false,
+       };
+     })[0];
+     return res.status(400).json(_errors);
+   }
     next()
 }

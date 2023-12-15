@@ -11,4 +11,10 @@ export interface IUser {
     email_otp: string,
     wallet: string,
     betslips: string[], //betslip ids 
+    first_name: string,
+    last_name: string,
+    date_of_birth: string, //YYYY-MM-DD
+    registered_at: string //YYYY-MM-DD
+    gender: string
+
 }

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateToken } from "../../middlewares/auth";
-import { Football } from "../../controllers/betHandler";
+import { Football } from "../../controllers/tivoBetHandler";
 import { Wallets } from "../../services/wallets.ts/Wallets";
 import { Betslips } from "../../services/betslips/Betslips";
 import { deposit } from "../../services/payments/deposits/userDeposit";
