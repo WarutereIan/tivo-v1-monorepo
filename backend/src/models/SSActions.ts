@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { ISSBets } from "../types/ISSBets";
+import { ISSBets } from "../types/ISSActions";
 
 const SSBetsSchema = new Schema<ISSBets>({
   action_id: {
@@ -30,7 +30,11 @@ const SSBetsSchema = new Schema<ISSBets>({
     type: Boolean,
     default: false,
   },
-  rolled_back_at: {}
+  rolled_back_at: {},
+  action_type: {
+    type: String,
+    required: true,
+  },
 });
 
-export const SSBet = model<ISSBets>("SSBet", SSBetsSchema);
+export const SSAction = model<ISSBets>("SSAction", SSBetsSchema);
