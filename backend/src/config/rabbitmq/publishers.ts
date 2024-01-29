@@ -10,5 +10,8 @@ export const Publisher = RabbitMQ.createPublisher({
     { exchange: "monnifyWithdrawalRequestsBatches", type: "topic" },
     { exchange: "monnifyDepositsResponses", type: "topic" },
     { exchange: "monnifyWithdrawalsResponses", type: "topic" },
+    { exchange: "sswissBetActions", type:"topic"},
+    { exchange: "sswissWinActions", type:"topic"}
+
   ],
 });
