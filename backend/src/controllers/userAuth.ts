@@ -21,7 +21,11 @@ export const signUp = async (req: Request, res: Response) => {
     return res.status(400).json(_errors);
   }
 
-  const {
+ 
+
+  try {
+
+     const {
     username,
     phone_number,
     email,
@@ -70,7 +74,6 @@ export const signUp = async (req: Request, res: Response) => {
     });
   }
 
-  try {
     let date = new Date();
 
     let registered_at = `${date.getUTCFullYear()}-${
