@@ -34,4 +34,12 @@ export const config = {
     MONNIFY_WALLET_ACCOUNT_NUMBER: process.env.MONNIFY_WALLET_ACCOUNT_NUMBER!,
     MONNIFY_CONTRACT_CODE: process.env.MONNIFY_CONTRACT_CODE!,
   },
+
+  SOFTSWISS: {
+    AUTH_TOKEN: process.env.AUTH_TOKEN!,
+    CASINO_ID: process.env.CASINO_ID!,
+    BACKEND_URL: process.env.BACKEND_URL!,
+    USER_RETURN_URL: process.env.USER_RETURN_URL!,
+    USER_DEPOSIT_URL: process.env.USER_DEPOSIT_URL!,
+  },
 };

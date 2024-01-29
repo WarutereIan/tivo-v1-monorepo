@@ -21,8 +21,23 @@ export const signUp = async (req: Request, res: Response) => {
     return res.status(400).json(_errors);
   }
 
-  const { username, phone_number, email, password, confirm_password } =
-    req.body;
+ 
+
+  try {
+
+     const {
+    username,
+    phone_number,
+    email,
+    password,
+    confirm_password,
+    first_name,
+    last_name,
+    date_of_birth,
+    gender,
+    city,
+    country,
+  } = req.body;
 
   if (password !== confirm_password) {
     return res.status(400).json({
@@ -59,7 +74,12 @@ export const signUp = async (req: Request, res: Response) => {
     });
   }
 
-  try {
+    let date = new Date();
+
+    let registered_at = `${date.getUTCFullYear()}-${
+      date.getMonth() + 1
+    }-${date.getDate()}`;
+
     //create user:
     const user = await User.create({
       username,
@@ -67,6 +87,13 @@ export const signUp = async (req: Request, res: Response) => {
       email,
       password,
       confirm_password,
+      first_name,
+      last_name,
+      date_of_birth,
+      gender,
+      city,
+      registered_at,
+      country,
     });
 
     //create wallet
