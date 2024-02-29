@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import { SSAction } from "../models/SSActions";
 import { Wallet } from "../models/Wallet";
 import { SSWin } from "../models/SSWin";
+import { Publisher } from "../config/rabbitmq/publishers";
 
 //TODO: set number of decimal places dependent on the type of currency the user selects
 //TODO: will need function to close game session
@@ -36,45 +37,10 @@ export const processSwissResult = async (req: Request, res: Response) => {
  * This class contains functions that handle requests from the Game Content Provider to
  * the casino/wallet(us, tivobet)
  */
-export class GCP_TO_WALLET_REQUESTS {
-  //also handles the balance request from the gcp
 
-  /**
-   * 
-   * @param currency 
-   * @returns number of decimal places for the respective currency
-   */
-   setDecimalPlaces(currency: string) {
-    let decimal_places: number = 2
-    
-    switch (currency) {
-      case "NGN": {
-        
-        decimal_places = 2
-        break
-      }
-        case "USD": {
-          
-        decimal_places = 2
-        break
-      }
-       /*  case "NGN": {
-        
-        break
-      }
-        case "NGN": {
-        
-        break
-      } */
-      default: {
-        decimal_places = 2
-        }
-    }
 
-    return decimal_places
-    
-  }
-  static async play(req: Request, res: Response) {
+export const GCP_play = async (req: Request, res: Response) => {
+  {
     //will need to push these to a queue for later processing with workers
     const { user_id, currency, game, game_id, finished, actions } = req.body;
 
@@ -87,14 +53,14 @@ export class GCP_TO_WALLET_REQUESTS {
 
       let txArr: any = [];
 
-      if (!finished) {
+      if (!actions|| !finished && (!actions)) {
         let updatedWallet: any = await Wallet.findOne({ ownerID: user_id });
 
-        console.log('Check balance request from sswiss,balance:', updatedWallet.currentBalance);
+        console.log('Check balance request from sswiss-play,balance:', Math.round(updatedWallet.currentBalance * 100) / 100 );
         
 
         return res.send({
-          balance: updatedWallet.currentBalance*100,
+          balance: Math.round(updatedWallet.currentBalance * 100) ,
           game_id: game_id,
           transactions: txArr,
         });
@@ -145,7 +111,7 @@ export class GCP_TO_WALLET_REQUESTS {
             else {
 
               if (action_type == "bet") {
-                let _bet_action = await SSAction.create({
+               /*  let _bet_action = await SSAction.create({
                   user_id,
                   action_type,
                   ..._action,
@@ -155,21 +121,28 @@ export class GCP_TO_WALLET_REQUESTS {
                 _bet_action.processed = true;
                 let _date = new Date();
                 _bet_action.processed_at = { time: _date.toISOString() };
-                await userWallet.save();
+                await userWallet.save(); */
+                await Publisher.send({
+                  exchange: "sswissBetActions",
+                  routingKey: "sswissBetActions"
+                }, {user_id: user_id, action: _action})
+
+                let _date = new Date();
+                let processed_at = _date.toISOString() 
                 
                 txArr.push({
-                  action_id: _bet_action.action_id,
-                  tx_id: _bet_action._id,
-                  processed_at: _bet_action.processed_at.time,
+                  action_id: _action.action_id,
+                  //tx_id: _bet_action._id,
+                  processed_at: processed_at,
                 });
-                await _bet_action.save();
+                /* await _bet_action.save();
                   console.info(`processed bet action ${_action.action_id}
                         
 
-                  `);
+                  `); */
               }
               else  {
-                let _win_action = await SSAction.create({
+                /* let _win_action = await SSAction.create({
                   user_id,
                   action_type,
                   ..._action,
@@ -179,18 +152,26 @@ export class GCP_TO_WALLET_REQUESTS {
                 _win_action.processed = true;
                 let date = new Date();
                 _win_action.processed_at = { time: date.toISOString() };
-                await userWallet.save();
+                await userWallet.save(); */
+
+                await Publisher.send({
+                  exchange: "sswissWinActions",
+                  routingKey: "sswissWinActions"
+                }, {user_id: user_id, action: _action})
+
+                let _date = new Date();
+                let processed_at = _date.toISOString() 
                
                 txArr.push({
-                  action_id: _win_action.action_id,
-                  tx_id: _win_action._id,
-                  processed_at: _win_action.processed_at.time,
+                  action_id: _action.action_id,
+                  //tx_id: _win_action._id,
+                  processed_at: processed_at,
                 });
 
-                 await _win_action.save();
+                 /* await _win_action.save();
                   console.info(`processed win action ${_action.action_id}
                     
-                  `);
+                  `); */
 
               }              
               
@@ -204,7 +185,7 @@ export class GCP_TO_WALLET_REQUESTS {
 
         if (updatedWallet) {
           return res.json({
-            balance: updatedWallet.currentBalance*100,
+            balance: Math.round(updatedWallet.currentBalance * 100),
             game_id: game_id,
             transactions: txArr,
           });
@@ -226,8 +207,10 @@ export class GCP_TO_WALLET_REQUESTS {
       });
     }
   }
+}
 
-  static async rollbackRequest(req: Request, res: Response) {
+export const GCP_rollback = async (req: Request, res: Response) => {
+  {
     const { user_id, currency, game, game_id, finished, actions } = req.body;
 
     console.log(req.body);
@@ -241,23 +224,30 @@ export class GCP_TO_WALLET_REQUESTS {
         let updatedWallet: any = await Wallet.findOne({ ownerID: user_id });
 
         return res.json({
-          balance: updatedWallet.currentBalance*100,
+          balance: Math.round(updatedWallet.currentBalance * 100),
           game_id: game_id,
           transactions: txArr,
         });
       }
-
-      for await (const _action of actions) {
+      else {
+        for await (const _action of actions) {
         let original_action = await SSAction.findOne({
           action_id: _action.original_action_id,
         });
 
-        if (!original_action) {
-          console.log(`original action ${_action.original_action_id} not found`);
-          continue
-        }
+        if (original_action && original_action.rolled_back) {
 
-        let userWallet = await Wallet.findOne({ ownerID: user_id });
+          console.log("received already processed rollback request fro action", original_action.action_id);
+          
+
+           txArr.push({
+            action_id: original_action.action_id,
+            tx_id: "",
+            processed_at: original_action.processed_at,
+          });
+        }
+        else if (original_action && !original_action.rolled_back) {
+          let userWallet = await Wallet.findOne({ ownerID: user_id });
 
         if (userWallet && original_action.action_type == "bet") {
           userWallet.currentBalance += original_action.amount/100;
@@ -295,15 +285,32 @@ export class GCP_TO_WALLET_REQUESTS {
             `rolled back original win action ${_action.original_action_id}`
           );
         }
+          //should have provision for rollbacks whose original actions haven't been sent yet
+          
+        } else {
+          console.log(`original action ${_action.original_action_id} not found`);
+
+          let date = new Date();
+          let rolled_back_at =date.toISOString() ;
+
+           txArr.push({
+            action_id: _action.action_id,
+            tx_id: "",
+            processed_at: rolled_back_at,
+          });
+        }          
       }
 
       let updatedWallet: any = await Wallet.findOne({ ownerID: user_id });
 
       return res.json({
-        balance: updatedWallet.currentBalance*100,
+        balance: Math.round(updatedWallet.currentBalance * 100),
         game_id: game_id,
         transactions: txArr,
       });
+      }
+
+      
     } catch (err) {
       console.error(err);
       return res.json({
@@ -312,14 +319,4 @@ export class GCP_TO_WALLET_REQUESTS {
       });
     }
   }
-
-  static async issueFreespins() {}
-
-  static async freespinsRequest(req: Request, res: Response) {
-    const { issue_id, status, total_amount } = req.body;
-  }
-
-  static async roundDetailsRequest() {}
-
-  static async accountIdentifierRequest() {}
 }
