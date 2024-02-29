@@ -21,7 +21,7 @@ export class WALLET_TO_GCP_REQUESTS {
       let userWallet = await Wallet.findOne({ ownerID: userId });
 
       if (user && userWallet) {
-        let userBalance = userWallet.currentBalance;
+        let userBalance = Math.round(userWallet.currentBalance * 100);
         let casino_id = config.SOFTSWISS.CASINO_ID;
 
         let userIPaddress =
@@ -63,6 +63,8 @@ export class WALLET_TO_GCP_REQUESTS {
           user: userObj,
         };
 
+
+
         let requestSignature = signRequest(requestObj);
 
         let axiosConfig = {
@@ -84,7 +86,7 @@ export class WALLET_TO_GCP_REQUESTS {
         return res.status(200).json({ success: true, data });
       }
     } catch (err: any) {
-      console.error(err.response.data);
+      console.error("error from sswiss create game session",err.response.data);
       return res
         .status(500)
         .json({ success: false, msg: "Internal server error" });

@@ -10,6 +10,8 @@ import {
 } from "../../services/payments/withdrawals/monnify/monnifyBatch";
 import { processMonnifyDepoResponses } from "../../services/processQueues/processDeposits/monnifyDeposits";
 import { initMonnifyWithdrawalResponseConsumer } from "../../services/processQueues/processDeposits/monnifyWithdrawals";
+import { processSoftSwissBetActions } from "../../services/sswiss_worker/sswissBetsConsumer";
+import { processSoftSwissWinActions } from "../../services/sswiss_worker/sswissWinsConsumer";
 
 const brokerUrl = config.MSG_BROKER_URL;
 
@@ -27,4 +29,6 @@ RabbitMQ.on("connection", () => {
   initMonnify_W_Batch_Consumer();
   processMonnifyDepoResponses();
   initMonnifyWithdrawalResponseConsumer();
+  processSoftSwissBetActions()
+  processSoftSwissWinActions()
 });
