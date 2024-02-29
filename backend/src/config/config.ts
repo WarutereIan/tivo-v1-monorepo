@@ -42,4 +42,8 @@ export const config = {
     USER_RETURN_URL: process.env.USER_RETURN_URL!,
     USER_DEPOSIT_URL: process.env.USER_DEPOSIT_URL!,
   },
+
+  RPC_PROVIDERS: {
+    POLYGON_MUMBAI: process.env.MUMBAI_RPC_PROVIDER!,
+  },
 };
