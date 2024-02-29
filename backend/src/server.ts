@@ -8,13 +8,7 @@ import cluster from "cluster";
 import { config } from "./config/config";
 import { initCacheValues } from "./config/initCacheValues";
 import { startCronJobs } from "./cronJobs/cronJobs";
-import {
-  BundesligaServer,
-  EPLServer,
-  LaLigaServer,
-  SerieAServer,
-  startStreamingServers,
-} from "./config/socketio";
+
 
 let db: any;
 (async () => {
@@ -73,3 +67,5 @@ httpServer.listen(config.PORT || 5000, () => {
 
 //
 startCronJobs();
+
+

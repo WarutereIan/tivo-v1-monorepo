@@ -5,6 +5,7 @@ import { Password } from "../helpers/password";
 import { Wallet } from "../models/Wallet";
 import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
+import { createCryptoWallet } from "../utils/ethers/wallet";
 
 export const signUp = async (req: Request, res: Response) => {
   const errors = validationResult(req);
@@ -96,11 +97,14 @@ export const signUp = async (req: Request, res: Response) => {
       country,
     });
 
-    //create wallet
+    //create fiat wallet
     let wallet = await Wallet.create({
       ownerID: user.id,
       currentBalance: 0,
     });
+
+    //create crypto wallet
+    await createCryptoWallet(user.id);
 
     let _user = {
       username: user.username,

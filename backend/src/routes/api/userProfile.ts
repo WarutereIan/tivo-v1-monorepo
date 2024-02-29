@@ -6,6 +6,12 @@ import { Betslips } from "../../services/betslips/Betslips";
 import { deposit } from "../../services/payments/deposits/userDeposit";
 import { withdraw } from "../../services/payments/withdrawals/UserWithdrawals";
 import { playInstantVirtual } from "../../services/instantVirtual/clientInterface";
+import {
+  depositCrypto,
+  getCryptoWalletBalance,
+  getWalletAddress,
+  redeemShares,
+} from "../../controllers/user";
 
 const router = Router();
 
@@ -22,5 +28,13 @@ router.post("/deposit", validateToken, deposit);
 router.post("/withdraw", validateToken, withdraw);
 
 router.post("/play-instant-virtual", validateToken, playInstantVirtual);
+
+router.post("/deposit-crypto", validateToken, depositCrypto);
+
+router.get("/get-wallet-address", validateToken, getWalletAddress);
+
+router.get("/get-crypto-wallet-balance", validateToken, getCryptoWalletBalance);
+
+router.post("/withdraw-token", validateToken, redeemShares);
 
 module.exports = router;

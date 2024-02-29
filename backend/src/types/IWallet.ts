@@ -1,4 +1,4 @@
-export interface IWallet{
-    ownerID: string,
-    currentBalance: number
+export interface IWallet {
+  ownerID: string;
+  currentBalance: number;
 }
