@@ -25,6 +25,7 @@
     "@types/hpp": "^0.2.2",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
+    "bitcore-lib": "^10.0.23",
     "cluster": "^0.7.7",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

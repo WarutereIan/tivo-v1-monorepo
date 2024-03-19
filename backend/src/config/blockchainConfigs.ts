@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { JsonRpcProvider, Wallet } from "ethers";
 
 export const chainConfigs: {
   [index: string]: {
@@ -19,3 +20,6 @@ export const chainConfigs: {
     },
   },
 };
+
+export const MASTER_WALLET_PRIVATE_KEY: string =
+  process.env.MASTER_WALLET_PRIVATE_KEY!;

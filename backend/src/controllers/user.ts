@@ -11,12 +11,14 @@ import {
 import { chainConfigs } from "../config/blockchainConfigs";
 
 import { abiERC20 } from "@metamask/metamask-eth-abis";
-import { VaultActions, authorizeVaultSpender } from "../utils/ethers/wallet";
+import {
+  VaultActions,
+  authorizeVaultSpender,
+  createCryptoWallet,
+} from "../utils/ethers/EVM_Wallet";
 import Cryptr from "cryptr";
 import { config } from "../config/config";
 import { TokenBalance } from "../models/CryptoTokenBalance";
-
-export const createCryptoWallet = async () => {};
 
 export const depositCrypto = async (req: Request, res: Response) => {
   const errors = validationResult(req);
@@ -97,7 +99,7 @@ export const depositCrypto = async (req: Request, res: Response) => {
             balance: deposited_amount,
           });
         } else {
-          tokenBalance.balance = deposited_amount;
+          tokenBalance.balance = Number(deposited_amount);
           await tokenBalance.save();
         }
 
@@ -136,11 +138,16 @@ export const getWalletAddress = async (req: Request, res: Response) => {
 
     if (userCryptoWallet) {
       return res.status(200).json({ success: true, userCryptoWallet });
+    } else {
+      //wallet now created on demand because of gas fees being deposited for every new wallet
+
+      let userCryptoWallet = await createCryptoWallet(userId);
+
+      return res.status(200).json({
+        success: true,
+        wallet_address: userCryptoWallet?.wallet_address,
+      });
     }
-    return res.status(404).json({
-      success: false,
-      msg: "Wallet not found, please create wallet to get deposit address",
-    });
   } catch (err) {
     console.error(err);
     res
@@ -241,16 +248,14 @@ export const redeemShares = async (req: Request, res: Response) => {
       token
     );
 
-    userTokenBalance.balance = new_balance;
+    userTokenBalance.balance = Number(new_balance);
 
     await userTokenBalance.save();
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        msg: `Successfully withdrawn ${amount} ${token} to receiving wallet ${recepient_address}`,
-      });
+    return res.status(200).json({
+      success: true,
+      msg: `Successfully withdrawn ${amount} ${token} to receiving wallet ${recepient_address}`,
+    });
   } catch (err) {
     console.error(err);
     return res
