@@ -9,6 +9,7 @@ import {
   LaLigaServer,
   SerieAServer,
 } from "../config/socketio";
+import { checkUserBTCDeposits } from "../services/BTCWallets.ts/checkUserBTCDeposits";
 
 //have each league with its own cron job
 
@@ -75,6 +76,11 @@ const payUserWalletsCron = new CronJob("0/5 * * * *", async () => {
   }
 });
 
+const checkBTCDepositsCron = new CronJob("0/2 * * * *", async () => {
+  console.log("running checkBTCDepositsCron");
+  await checkUserBTCDeposits();
+});
+
 export const startCronJobs = () => {
   try {
     /* EPLeagueCron.start();
@@ -83,6 +89,7 @@ export const startCronJobs = () => {
     SerieLeagueCron.start(); */
     checkSlipsCron.start();
     payUserWalletsCron.start();
+    checkBTCDepositsCron.start();
   } catch (err) {
     console.error(err);
     process.exit(1);

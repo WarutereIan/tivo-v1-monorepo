@@ -23,3 +23,10 @@ export const chainConfigs: {
 
 export const MASTER_WALLET_PRIVATE_KEY: string =
   process.env.MASTER_WALLET_PRIVATE_KEY!;
+
+export const BTC_Config = {
+  TESTNET_URL_ENDPOINT: process.env.TESTNET_URL_ENDPOINT!,
+  MAINNET_URL_ENDPOINT: process.env.MAINNET_URL_ENDPOINT!,
+  TIVO_VAULT_WALLET_ADDRESS: process.env.TIVO_VAULT_WALLET_ADDRESS!,
+  MINIMUM_NON_DUST_FEE: Number(process.env.MINIMUM_NON_DUST_FEE!),
+};

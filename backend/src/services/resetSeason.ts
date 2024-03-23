@@ -2,7 +2,7 @@
 //teams stats: p w d l gd gs gc p : these are cleared
 //creates new season: new matchups created but with the season field incremented
 
-import Tournament from "round-robin-tournament";
+import Tournament from "../utils/round-robin-tournament/tournament";
 import { RoundCounter } from "../models/RoundCounter";
 import { Season } from "../models/Season";
 import { Team } from "../models/Team";

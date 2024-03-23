@@ -19,6 +19,8 @@ import {
 import Cryptr from "cryptr";
 import { config } from "../config/config";
 import { TokenBalance } from "../models/CryptoTokenBalance";
+import { BTCWallet } from "../models/BTCWallet";
+import { createBTCWallet } from "../utils/btc_wallet/BTC_Wallet";
 
 export const depositCrypto = async (req: Request, res: Response) => {
   const errors = validationResult(req);
@@ -111,6 +113,84 @@ export const depositCrypto = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, msg: "Internal server error" });
+  }
+};
+
+export const getBTCWalletAddress = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    let _errors = errors.array().map((error) => {
+      return {
+        msg: error.msg,
+        field: error.param,
+        success: false,
+      };
+    })[0];
+    return res.status(400).json(_errors);
+  }
+
+  let userID = req.user.id;
+  try {
+    let userBTCWallet = await BTCWallet.findOne({ userID: userID }).select(
+      "walletAddress"
+    );
+
+    if (userBTCWallet) {
+      return res
+        .status(200)
+        .json({ success: true, walletAddress: userBTCWallet.walletAddress });
+    } else {
+      let wallet = await createBTCWallet(userID);
+
+      return res
+        .status(200)
+        .json({ success: true, walletAddress: wallet?.walletAddress });
+    }
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, msg: " Internal Server Error" });
+  }
+};
+
+export const getBTCWalletBalance = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    let _errors = errors.array().map((error) => {
+      return {
+        msg: error.msg,
+        field: error.param,
+        success: false,
+      };
+    })[0];
+    return res.status(400).json(_errors);
+  }
+
+  let userID = req.user.id;
+  try {
+    let userBTCWallet = await BTCWallet.findOne({ userID: userID }).select(
+      "walletAddress balance"
+    );
+    if (userBTCWallet) {
+      return res.status(200).json({
+        success: true,
+        walletAddress: userBTCWallet.walletAddress,
+        balance: userBTCWallet.available_balance,
+      });
+    } else
+      return res
+        .status(404)
+        .json({ success: false, msg: "User BTC wallet not found" });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, msg: "Internal server error" });
   }
 };
 

@@ -1,6 +1,6 @@
 //this script is used to reset the db
 
-import Tournament from "round-robin-tournament";
+import Tournament from "../utils/round-robin-tournament/tournament";
 import { connectDB } from "../config/db";
 import { type } from "os";
 import { Match } from "../models/Match";
