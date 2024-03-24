@@ -8,6 +8,8 @@ import { withdraw } from "../../services/payments/withdrawals/UserWithdrawals";
 import { playInstantVirtual } from "../../services/instantVirtual/clientInterface";
 import {
   depositCrypto,
+  getBTCWalletAddress,
+  getBTCWalletBalance,
   getCryptoWalletBalance,
   getWalletAddress,
   redeemShares,
@@ -34,6 +36,10 @@ router.post("/deposit-crypto", validateToken, depositCrypto);
 router.get("/get-wallet-address", validateToken, getWalletAddress);
 
 router.get("/get-crypto-wallet-balance", validateToken, getCryptoWalletBalance);
+
+router.get("/get-btc-wallet-address", validateToken, getBTCWalletAddress);
+
+router.get("/get-btc-wallet-balance", validateToken, getBTCWalletBalance);
 
 router.post("/withdraw-token", validateToken, redeemShares);
 

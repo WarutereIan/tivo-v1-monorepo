@@ -11,12 +11,16 @@ import {
 import { chainConfigs } from "../config/blockchainConfigs";
 
 import { abiERC20 } from "@metamask/metamask-eth-abis";
-import { VaultActions, authorizeVaultSpender } from "../utils/ethers/wallet";
+import {
+  VaultActions,
+  authorizeVaultSpender,
+  createCryptoWallet,
+} from "../utils/ethers/EVM_Wallet";
 import Cryptr from "cryptr";
 import { config } from "../config/config";
 import { TokenBalance } from "../models/CryptoTokenBalance";
-
-export const createCryptoWallet = async () => {};
+import { BTCWallet } from "../models/BTCWallet";
+import { createBTCWallet } from "../utils/btc_wallet/BTC_Wallet";
 
 export const depositCrypto = async (req: Request, res: Response) => {
   const errors = validationResult(req);
@@ -97,7 +101,7 @@ export const depositCrypto = async (req: Request, res: Response) => {
             balance: deposited_amount,
           });
         } else {
-          tokenBalance.balance = deposited_amount;
+          tokenBalance.balance = Number(deposited_amount);
           await tokenBalance.save();
         }
 
@@ -109,6 +113,86 @@ export const depositCrypto = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, msg: "Internal server error" });
+  }
+};
+
+export const getBTCWalletAddress = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    let _errors = errors.array().map((error) => {
+      return {
+        msg: error.msg,
+        field: error.param,
+        success: false,
+      };
+    })[0];
+    return res.status(400).json(_errors);
+  }
+
+  let userID = req.user.id;
+  try {
+    let userBTCWallet = await BTCWallet.findOne({ userID: userID }).select(
+      "walletAddress"
+    );
+
+    if (userBTCWallet) {
+      return res
+        .status(200)
+        .json({ success: true, walletAddress: userBTCWallet.walletAddress });
+    } else {
+      let wallet = await createBTCWallet(userID);
+
+      return res
+        .status(200)
+        .json({ success: true, walletAddress: wallet?.walletAddress });
+    }
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, msg: " Internal Server Error" });
+  }
+};
+
+export const getBTCWalletBalance = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    let _errors = errors.array().map((error) => {
+      return {
+        msg: error.msg,
+        field: error.param,
+        success: false,
+      };
+    })[0];
+    return res.status(400).json(_errors);
+  }
+
+  let userID = req.user.id;
+  try {
+    let userBTCWallet = await BTCWallet.findOne({ userID: userID }).select(
+      "walletAddress available_balance unconfirmed_deposit dust_amount"
+    );
+    if (userBTCWallet) {
+      return res.status(200).json({
+        success: true,
+        walletAddress: userBTCWallet.walletAddress,
+        available_balance: userBTCWallet.available_balance,
+        unconfirmed_deposit: userBTCWallet.unconfirmed_deposit,
+        dust_amount: userBTCWallet.dust_amount,
+      });
+    } else
+      return res
+        .status(404)
+        .json({ success: false, msg: "User BTC wallet not found" });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, msg: "Internal server error" });
   }
 };
 
@@ -136,11 +220,16 @@ export const getWalletAddress = async (req: Request, res: Response) => {
 
     if (userCryptoWallet) {
       return res.status(200).json({ success: true, userCryptoWallet });
+    } else {
+      //wallet now created on demand because of gas fees being deposited for every new wallet
+
+      let userCryptoWallet = await createCryptoWallet(userId);
+
+      return res.status(200).json({
+        success: true,
+        wallet_address: userCryptoWallet?.wallet_address,
+      });
     }
-    return res.status(404).json({
-      success: false,
-      msg: "Wallet not found, please create wallet to get deposit address",
-    });
   } catch (err) {
     console.error(err);
     res
@@ -241,16 +330,14 @@ export const redeemShares = async (req: Request, res: Response) => {
       token
     );
 
-    userTokenBalance.balance = new_balance;
+    userTokenBalance.balance = Number(new_balance);
 
     await userTokenBalance.save();
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        msg: `Successfully withdrawn ${amount} ${token} to receiving wallet ${recepient_address}`,
-      });
+    return res.status(200).json({
+      success: true,
+      msg: `Successfully withdrawn ${amount} ${token} to receiving wallet ${recepient_address}`,
+    });
   } catch (err) {
     console.error(err);
     return res

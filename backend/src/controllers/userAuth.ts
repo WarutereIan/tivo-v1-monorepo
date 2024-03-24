@@ -5,7 +5,7 @@ import { Password } from "../helpers/password";
 import { Wallet } from "../models/Wallet";
 import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
-import { createCryptoWallet } from "../utils/ethers/wallet";
+import { createCryptoWallet } from "../utils/ethers/EVM_Wallet";
 
 export const signUp = async (req: Request, res: Response) => {
   const errors = validationResult(req);
@@ -22,58 +22,55 @@ export const signUp = async (req: Request, res: Response) => {
     return res.status(400).json(_errors);
   }
 
- 
-
   try {
+    const {
+      username,
+      phone_number,
+      email,
+      password,
+      confirm_password,
+      first_name,
+      last_name,
+      date_of_birth,
+      gender,
+      city,
+      country,
+    } = req.body;
 
-     const {
-    username,
-    phone_number,
-    email,
-    password,
-    confirm_password,
-    first_name,
-    last_name,
-    date_of_birth,
-    gender,
-    city,
-    country,
-  } = req.body;
+    if (password !== confirm_password) {
+      return res.status(400).json({
+        msg: "Passwords do not match",
+        success: false,
+      });
+    }
 
-  if (password !== confirm_password) {
-    return res.status(400).json({
-      msg: "Passwords do not match",
-      success: false,
-    });
-  }
+    if (await User.exists({ username })) {
+      return res.status(400).json({
+        msg: "Username already exists",
+        success: false,
+      });
+    }
+    if (await User.exists({ phone_number })) {
+      return res.status(400).json({
+        msg: "Phone Number already exists",
+        success: false,
+      });
+    }
+    if (await User.exists({ email })) {
+      return res.status(400).json({
+        msg: "Email already exists",
+        success: false,
+      });
+    }
 
-  if (await User.exists({ username })) {
-    return res.status(400).json({
-      msg: "Username already exists",
-      success: false,
-    });
-  }
-  if (await User.exists({ phone_number })) {
-    return res.status(400).json({
-      msg: "Phone Number already exists",
-      success: false,
-    });
-  }
-  if (await User.exists({ email })) {
-    return res.status(400).json({
-      msg: "Email already exists",
-      success: false,
-    });
-  }
-
-  //validate password
-  const { error } = Password.validate(password);
-  if (error) {
-    return res.status(400).json({
-      msg: error,
-      success: false,
-    });
-  }
+    //validate password
+    const { error } = Password.validate(password);
+    if (error) {
+      return res.status(400).json({
+        msg: error,
+        success: false,
+      });
+    }
 
     let date = new Date();
 
@@ -103,8 +100,8 @@ export const signUp = async (req: Request, res: Response) => {
       currentBalance: 0,
     });
 
-    //create crypto wallet
-    await createCryptoWallet(user.id);
+    //create crypto wallet: moved to be created on demand cos wallet will automatically get a gas deposit
+    //await createCryptoWallet(user.id);
 
     let _user = {
       username: user.username,

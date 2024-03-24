@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { JsonRpcProvider, Wallet } from "ethers";
 
 export const chainConfigs: {
   [index: string]: {
@@ -18,4 +19,14 @@ export const chainConfigs: {
       TIVO: "0xAf40032204fFf88f3896b98eB13f3f98691a0DB8",
     },
   },
+};
+
+export const MASTER_WALLET_PRIVATE_KEY: string =
+  process.env.MASTER_WALLET_PRIVATE_KEY!;
+
+export const BTC_Config = {
+  TESTNET_URL_ENDPOINT: process.env.TESTNET_URL_ENDPOINT!,
+  MAINNET_URL_ENDPOINT: process.env.MAINNET_URL_ENDPOINT!,
+  TIVO_VAULT_WALLET_ADDRESS: process.env.TIVO_VAULT_WALLET_ADDRESS!,
+  MINIMUM_NON_DUST_FEE: Number(process.env.MINIMUM_NON_DUST_FEE!),
 };

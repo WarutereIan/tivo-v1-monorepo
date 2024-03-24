@@ -2,7 +2,7 @@ export interface ITokenBalance {
   tokenAddress: string;
   tokenName: string;
   balance: number;
-  chain: string
+  chain: string;
 }
 
 export interface ICryptoWallet {
