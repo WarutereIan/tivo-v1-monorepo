@@ -41,7 +41,7 @@ export const checkUserBTCDeposits = async () => {
             //balance is in satoshis
             availableBal += utxo.value;
           }
-          availableBal -= 3 * BTC_Config.MINIMUM_NON_DUST_FEE;
+          availableBal -= 500;
 
           //have a minimum amount in utxos that is transferrable: 2 * minimum nondust fee
           //to go ahead with the transaction, available bal will have to be greater than 2*minimum nondust fee
@@ -77,6 +77,7 @@ export const checkUserBTCDeposits = async () => {
             });
 
             BTCWallet.unconfirmed_deposit += availableBal;
+            BTCWallet.script = script;
             await BTCWallet.save();
             console.log(
               `updated BTCWallet ${BTCWallet.walletAddress} unconfirmed deposit as ${BTCWallet.unconfirmed_deposit}`
@@ -90,9 +91,8 @@ export const checkUserBTCDeposits = async () => {
               `updated BTCWallet ${BTCWallet.walletAddress} unconfirmed dust amount as ${BTCWallet.dust_amount}`
             );
           }
-        }
-
-        console.log("no utxos found for the wallet", BTCWallet.walletAddress);
+        } else
+          console.log("no utxos found for the wallet", BTCWallet.walletAddress);
       }
     }
   } catch (err) {

@@ -33,6 +33,13 @@ export const createBTCWallet = async (userID: string) => {
     //create script
     const script = bitcore.Script.buildPublicKeyHashOut(address).toString();
 
+    //generate the change wallet address and it's associated private key:
+    const _privateKey2 = new bitcore.PrivateKey();
+    const privateKey2 = _privateKey2.toWIF();
+    const publicKey2 = _privateKey2.toPublicKey();
+    const address2 = new bitcore.Address(publicKey2, bitcore.Networks.testnet);
+    const script2 = bitcore.Script.buildPublicKeyHashOut(address2).toString();
+
     //save these to db
     const userBTCWallet = await BTCWallet.create({
       userID: userID,
@@ -40,6 +47,10 @@ export const createBTCWallet = async (userID: string) => {
       publicKey: publicKey,
       walletAddress: address,
       script: script,
+      privateKey2: privateKey2,
+      publicKey2: publicKey2,
+      walletAddress2: address2,
+      script2: script2,
     });
 
     console.info(`created BTC wallet for user ${userID} \n ${userBTCWallet}`);

@@ -174,13 +174,15 @@ export const getBTCWalletBalance = async (req: Request, res: Response) => {
   let userID = req.user.id;
   try {
     let userBTCWallet = await BTCWallet.findOne({ userID: userID }).select(
-      "walletAddress balance"
+      "walletAddress available_balance unconfirmed_deposit dust_amount"
     );
     if (userBTCWallet) {
       return res.status(200).json({
         success: true,
         walletAddress: userBTCWallet.walletAddress,
-        balance: userBTCWallet.available_balance,
+        available_balance: userBTCWallet.available_balance,
+        unconfirmed_deposit: userBTCWallet.unconfirmed_deposit,
+        dust_amount: userBTCWallet.dust_amount,
       });
     } else
       return res

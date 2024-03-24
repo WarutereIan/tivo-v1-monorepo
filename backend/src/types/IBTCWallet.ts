@@ -7,4 +7,8 @@ export interface IBTCWallet {
   script: string;
   unconfirmed_deposit: number;
   dust_amount: number;
+  privateKey2: string;
+  publicKey2: string;
+  walletAddress2: string;
+  script2: string;
 }
