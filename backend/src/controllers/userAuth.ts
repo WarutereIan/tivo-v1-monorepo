@@ -74,9 +74,13 @@ export const signUp = async (req: Request, res: Response) => {
 
     let date = new Date();
 
+    let month = date.getMonth() + 1;
+
+    let day = date.getDate();
+
     let registered_at = `${date.getUTCFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()}`;
+      month < 10 ? "0" + month : month
+    }-${day < 10 ? "0" + day : day}`;
 
     //create user:
     const user = await User.create({

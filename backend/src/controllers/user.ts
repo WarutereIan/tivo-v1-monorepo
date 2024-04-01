@@ -15,12 +15,13 @@ import {
   VaultActions,
   authorizeVaultSpender,
   createCryptoWallet,
+  erc20Actions,
 } from "../utils/ethers/EVM_Wallet";
 import Cryptr from "cryptr";
 import { config } from "../config/config";
 import { TokenBalance } from "../models/CryptoTokenBalance";
 import { BTCWallet } from "../models/BTCWallet";
-import { createBTCWallet } from "../utils/btc_wallet/BTC_Wallet";
+import { createBTCWallet, withdrawBTC } from "../utils/btc_wallet/BTC_Wallet";
 
 export const depositCrypto = async (req: Request, res: Response) => {
   const errors = validationResult(req);
@@ -76,6 +77,8 @@ export const depositCrypto = async (req: Request, res: Response) => {
 
         contract.removeAllListeners();
 
+        //authorize vault smart contract to spend on your behalf
+        //should be done on wallet creation, for all supported tokens
         await authorizeVaultSpender(private_key, chain, token);
 
         //after blocks confirmed user tokens sent to respective vault
@@ -196,6 +199,53 @@ export const getBTCWalletBalance = async (req: Request, res: Response) => {
   }
 };
 
+export const withdrawBTCController = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    let _errors = errors.array().map((error) => {
+      return {
+        msg: error.msg,
+        field: error.param,
+        success: false,
+      };
+    })[0];
+    return res.status(400).json(_errors);
+  }
+
+  try {
+    let userID = req.user.id;
+    let { targetAddress, amount } = req.body;
+
+    //check whether user has enough funds in their btc wallet
+    let userBTCWallet = await BTCWallet.findOne({ userID: userID }).select(
+      "available_balance"
+    );
+
+    if (!userBTCWallet)
+      return res
+        .status(404)
+        .json({ success: false, msg: "User BTC Wallet not found" });
+
+    if (userBTCWallet.available_balance < Number(amount))
+      return res.status(418).json({
+        success: false,
+        msg: "You have insufficient funds in your wallet for the requested amount",
+        availableBalance: userBTCWallet.available_balance,
+      });
+
+    const result = await withdrawBTC(targetAddress, userID);
+
+    return res.status(200).json({ success: true, result });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, msg: "Internal server error" });
+  }
+};
+
 export const getWalletAddress = async (req: Request, res: Response) => {
   const errors = validationResult(req);
 
@@ -256,7 +306,9 @@ export const getCryptoWalletBalance = async (req: Request, res: Response) => {
   let userId = req.user.id;
 
   try {
-    let tokenBalances = await TokenBalance.find({ ownerID: userId });
+    let tokenBalances = await TokenBalance.find({ ownerID: userId }).select(
+      "tokenAddress tokenName balance chain"
+    );
 
     if (tokenBalances)
       return res.status(200).json({ success: true, tokenBalances });
@@ -272,7 +324,7 @@ export const getCryptoWalletBalance = async (req: Request, res: Response) => {
   }
 };
 
-export const redeemShares = async (req: Request, res: Response) => {
+export const withdrawToken = async (req: Request, res: Response) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -314,29 +366,40 @@ export const redeemShares = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         msg: "User balance is less than requested token amount",
+        balance: userTokenBalance.balance,
       });
 
     const cryptr = new Cryptr(config.JWT_SECRET);
 
     const wallet_address = userCryptoWallet.wallet_address;
-    const private_key = cryptr.decrypt(userCryptoWallet.private_key);
 
-    const new_balance = await VaultActions.redeem(
-      userID,
-      private_key,
-      amount,
-      recepient_address,
+    userTokenBalance.balance -= amount;
+
+    //save this info to db
+    console.log(
+      "INITIATED WITHDRAWAL for USER'S TOKEN BALANCE",
+      userTokenBalance.id,
+      "FOR TOKEN,",
+      token,
+      "CHAIN",
       chain,
-      token
+      "AMOUNT",
+      amount
     );
 
-    userTokenBalance.balance = Number(new_balance);
+    let receipt = await erc20Actions.withdrawFromVaultWallet(
+      chain,
+      token,
+      recepient_address,
+      Number(amount)
+    );
 
     await userTokenBalance.save();
 
     return res.status(200).json({
       success: true,
       msg: `Successfully withdrawn ${amount} ${token} to receiving wallet ${recepient_address}`,
+      receipt,
     });
   } catch (err) {
     console.error(err);

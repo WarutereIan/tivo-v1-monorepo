@@ -12,7 +12,8 @@ import {
   getBTCWalletBalance,
   getCryptoWalletBalance,
   getWalletAddress,
-  redeemShares,
+  withdrawBTCController,
+  withdrawToken,
 } from "../../controllers/user";
 
 const router = Router();
@@ -41,6 +42,8 @@ router.get("/get-btc-wallet-address", validateToken, getBTCWalletAddress);
 
 router.get("/get-btc-wallet-balance", validateToken, getBTCWalletBalance);
 
-router.post("/withdraw-token", validateToken, redeemShares);
+router.post("/withdraw-btc", validateToken, withdrawBTCController);
+
+router.post("/withdraw-token", validateToken, withdrawToken);
 
 module.exports = router;

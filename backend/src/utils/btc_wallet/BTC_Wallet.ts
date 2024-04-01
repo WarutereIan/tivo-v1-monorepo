@@ -9,8 +9,9 @@ import axios from "axios";
   Unit,
 } from "bitcore-lib"; */
 
-import bitcore from "bitcore-lib";
+import bitcore, { Address } from "bitcore-lib";
 import { BTCWallet } from "../../models/BTCWallet";
+import { BTC_Config } from "../../config/blockchainConfigs";
 
 //generate a private key
 //const privateKey = new PrivateKey();
@@ -83,6 +84,25 @@ export const withdrawBTC = async (targetAddress: string, userID: string) => {
     //total lost in bets with btc staked
     //total deposits made with btc
     //total withdrawals
+
+    const withdrawalAddress = new bitcore.Address(targetAddress);
+
+    //get utxos
+    let utxos = [];
+    //prepare the utxos
+    utxos = await axios
+      .get(
+        `${BTC_Config.TESTNET_URL_ENDPOINT}/address/${BTC_Config.TIVO_VAULT_WALLET_ADDRESS}/utxo`
+      )
+      .then((response) => response.data);
+
+    utxos.sort((a: any, b: any) => a.value - b.value);
+
+    
+
+    console.log(utxos);
+
+    return utxos;
   } catch (err) {
     console.error(err);
   }

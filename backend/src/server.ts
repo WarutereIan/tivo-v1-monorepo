@@ -8,7 +8,8 @@ import cluster from "cluster";
 import { config } from "./config/config";
 import { initCacheValues } from "./config/initCacheValues";
 import { startCronJobs } from "./cronJobs/cronJobs";
-
+import { listenForEvmDeposits } from "./services/evm/ evmDepositsListener";
+import { setupEVMListeners } from "./services/evm/setupEVMListeners";
 
 let db: any;
 (async () => {
@@ -66,6 +67,7 @@ httpServer.listen(config.PORT || 5000, () => {
 //startStreamingServers();
 
 //
-startCronJobs();
-
-
+//startCronJobs();
+(async () => {
+  await setupEVMListeners();
+})();
