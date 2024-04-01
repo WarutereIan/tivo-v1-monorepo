@@ -1,4 +1,10 @@
-import { Contract, WebSocketProvider, formatEther, parseEther } from "ethers";
+import {
+  Contract,
+  WebSocketProvider,
+  formatEther,
+  formatUnits,
+  
+} from "ethers";
 import { chainConfigs } from "../../config/blockchainConfigs";
 import { abiERC20 } from "@metamask/metamask-eth-abis";
 import { CryptoWallet } from "../../models/CryptoWallet";
@@ -56,7 +62,8 @@ export const listenForEvmDeposits = async (
       const eventDetails = {
         chainName,
         token,
-        amount: Number(formatEther(event.log.args[2])),
+        //need to convert it to show the respective number of decimal places
+        amount: Number(formatUnits(event.log.args[2], contractDecimals)),
         wallet_address: event.log.args[1],
         transaction_hash: event.log.transactionHash,
       };

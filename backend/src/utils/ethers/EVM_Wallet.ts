@@ -229,7 +229,7 @@ export const erc20Actions = {
 
       let receipt = await tokenContract.transfer(
         destinationAddress,
-        parseEther(JSON.stringify(amount))
+        parseUnits(JSON.stringify(amount), await tokenContract.decimals())
       );
 
       return receipt;

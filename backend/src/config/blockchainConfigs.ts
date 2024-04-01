@@ -17,6 +17,8 @@ export const chainConfigs: {
 
     TOKEN_ADDRESSES: {
       TIVO2: "0x33c510E05C37DD2DAa05504A69FCd45e63343F61",
+      USDC: "0x2b8920cBdDCc3e85753423eEceCd179cb9232554",
+      USDT: "0xECd313e29b85cAf347fb832F80427602030cD3Fc",
     },
     VAULT_CONTRACT_ADDRESSES: {
       TIVO2: "0xAf40032204fFf88f3896b98eB13f3f98691a0DB8",
@@ -59,4 +61,4 @@ export const BTC_Config = {
 export const chainList = ["MUMBAI"];
 
 //LIST OF SUPPORTED TOKENS; WILL BE COMMON ACROSS ALL CHAINS
-export const tokensList = ["TIVO2"];
+export const tokensList = ["TIVO2", "USDC", "USDT"];
