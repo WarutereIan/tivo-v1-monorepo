@@ -9,7 +9,7 @@ import {
   parseUnits,
 } from "ethers";
 import { config } from "../../config/config";
-import { Password } from "../../helpers/password";
+
 import { CryptoWallet } from "../../models/CryptoWallet";
 import { abiERC20 } from "@metamask/metamask-eth-abis";
 import { abi } from "../abi/tivoVaultABI";
@@ -205,6 +205,8 @@ export const erc20Actions = {
       return receipt;
     } catch (error) {
       console.error(error);
+      //will need to return the error so that we revert a failed deposit? Not necessary tho since even for failed deposits, wallet balance will still get cleared out on next deposit
+      //return {error: true, }
     }
   },
 
